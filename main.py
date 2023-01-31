@@ -57,7 +57,7 @@ if __name__ == '__main__':
         webhook_path=WEBHOOK_PATH,
         on_startup=on_startup,
         on_shutdown=on_shutdown,
-        skip_updates=True,
+        skip_updates=False,
         host=WEBAPP_HOST,
         port=int(os.environ.get("PORT", WEBAPP_PORT)),
     )
