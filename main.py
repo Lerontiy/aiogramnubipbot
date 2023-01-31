@@ -8,17 +8,34 @@ from aiogram.utils.executor import start_webhook
 from aiogram import types
 
 from create_bot import dp, bot
-from stuff.settings import MESSAGES
+from stuff.settings import MESSAGES, API_TOKEN
 from stuff.database import db
 
 
-from handlers import handlers, callback, admin
-async def on_startup():
-    await bot.set_webhook("https://aiogramnubipbot.herokuapp.com/")
+# webhook settings
+WEBHOOK_HOST = "https://aiogramnubipbot.herokuapp.com"
+WEBHOOK_PATH = f"/webhook/{API_TOKEN}"
+WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
-    handlers.my_register_message_handler(dp)
-    callback.my_register_callback_query_handler(dp)
-    admin.my_admin_register_message_handler(dp)        
+
+# webserver settings
+WEBAPP_HOST = "0.0.0.0"
+WEBAPP_PORT = 5000
+
+
+from handlers import handlers, callback, admin
+handlers.my_register_message_handler(dp)
+callback.my_register_callback_query_handler(dp)
+admin.my_admin_register_message_handler(dp)   
+
+async def on_startup(dp):
+    await bot.set_webhook(WEBHOOK_URL) 
+
+
+async def on_shutdown(dp):
+    logging.warning('Shutting down..')
+
+    await bot.delete_webhook()    
 
 
 @dp.message_handler(chat_type=['private'])
@@ -37,8 +54,10 @@ if __name__ == '__main__':
     #server.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
     start_webhook(
         dispatcher=dp,
+        webhook_path=WEBHOOK_PATH,
         on_startup=on_startup,
+        on_shutdown=on_shutdown,
         skip_updates=True,
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000)),
+        host=WEBAPP_HOST,
+        port=int(os.environ.get("PORT", WEBAPP_PORT)),
     )
