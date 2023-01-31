@@ -8,34 +8,15 @@ from aiogram.utils.executor import start_webhook
 from aiogram import types
 
 from create_bot import dp, bot
-from stuff.settings import MESSAGES, API_TOKEN
+from stuff.settings import MESSAGES, WEBHOOK_PATH, WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
 from stuff.database import db
 
-
-# webhook settings
-WEBHOOK_HOST = "https://aiogramnubipbot.herokuapp.com"
-WEBHOOK_PATH = f"/{API_TOKEN}"
-WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
-
-
-# webserver settings
-WEBAPP_HOST = "0.0.0.0"
-WEBAPP_PORT = 5000
-
+print("A")
 
 from handlers import handlers, callback, admin
 handlers.my_register_message_handler(dp)
 callback.my_register_callback_query_handler(dp)
-admin.my_admin_register_message_handler(dp)   
-
-async def on_startup(dp):
-    await bot.set_webhook(WEBHOOK_URL) 
-
-
-async def on_shutdown(dp):
-    logging.warning('Shutting down..')
-
-    await bot.delete_webhook()    
+admin.my_admin_register_message_handler(dp)    
 
 
 @dp.message_handler(chat_type=['private'])
@@ -47,6 +28,17 @@ async def nothing(message: types.Message):
         await bot.send_photo(photo="AgACAgIAAxkBAAIKhmNe6GvJ_boVFKmcu60eQkx7cjgsAAITxDEbGbX5Si3n-2-h7v1lAQADAgADeAADKgQ", chat_id=message.from_user.id)
     else:
         await message.answer(text=MESSAGES["HELP_MESS"], parse_mode='html')
+
+
+
+async def on_startup(dp):
+    await bot.set_webhook(WEBHOOK_URL) 
+
+
+async def on_shutdown(dp):
+    logging.warning('Shutting down..')
+
+    await bot.delete_webhook()   
 
 
 if __name__ == '__main__':

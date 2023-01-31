@@ -13,11 +13,11 @@ import requests
 
 # блок, коли немає акаунту і треба визначитись з класом (викладач(-ка), студент(-ка))
 async def htoya(callback: types.CallbackQuery):
-    try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Зачекай...")
-    except:
-        pass
+    #try:
+    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
+    #        message_id=callback.message.message_id, text="Зачекай...")
+    #except:
+    #    pass
         
     try:
         acc_action = callback.data.split('_')[1]
@@ -198,11 +198,11 @@ async def teach_parse(callback: types.CallbackQuery):
 
 # курс
 async def stud_course(callback: types.CallbackQuery):
-    try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Зачекай...")
-    except:
-        pass
+    #try:
+    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
+    #        message_id=callback.message.message_id, text="Зачекай...")
+    #except:
+    #    pass
 
     try:
         callback_data = callback.data.split('_')
@@ -225,11 +225,11 @@ async def stud_course(callback: types.CallbackQuery):
 
 # відділення студенти
 async def stud_department(callback:types.CallbackQuery):
-    try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Зачекай...")
-    except:
-        pass
+    #try:
+    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
+    #        message_id=callback.message.message_id, text="Зачекай...")
+    #except:
+    #    pass
     
     callback_data = callback.data.split('_')
     course = callback_data[1]
@@ -253,11 +253,11 @@ async def stud_department(callback:types.CallbackQuery):
 
 # група студенти
 async def stud_group(callback: types.CallbackQuery):
-    try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Зачекай...")
-    except:
-        pass
+    #try:
+    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
+    #        message_id=callback.message.message_id, text="Зачекай...")
+    #except:
+    #    pass
 
     callback_data = callback.data.split('_')
 
@@ -291,11 +291,11 @@ async def stud_group(callback: types.CallbackQuery):
 
 # день тижня студенти
 async def stud_weekday(callback: types.CallbackQuery | types.Message):
-    try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Зачекай...")
-    except:
-        pass
+    #try:
+    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
+    #        message_id=callback.message.message_id, text="Зачекай...")
+    #except:
+    #    pass
 
 
     callback_data = callback.data.split('_')
@@ -318,11 +318,11 @@ async def stud_weekday(callback: types.CallbackQuery | types.Message):
 
 # парсинг розкладу студенти
 async def stud_parse(callback:types.CallbackQuery):
-    try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Зачекай...")
-    except:
-        pass
+    #try:
+    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
+    #        message_id=callback.message.message_id, text="Зачекай...")
+    #except:
+    #    pass
 
     # start_time = time.time()
 

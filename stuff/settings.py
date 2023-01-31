@@ -7,6 +7,16 @@ API_TOKEN = "5403738951:AAEbbME_mAhs9sVAQxvy9KYGG5MjktTfaW8"
 #API_TOKEN = "5718594262:AAFrlaZpViF_e2AVCiqQjbh7JqZ9JEzVKR4"
 
 
+# webhook settings
+WEBHOOK_HOST = "https://aiogramnubipbot.herokuapp.com"
+WEBHOOK_PATH = f"/{API_TOKEN}"
+WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+
+# webserver settings
+WEBAPP_HOST = "0.0.0.0"
+WEBAPP_PORT = 5000
+
+
 DEPARTMENTS = [
     "Економічне відділення", "Маркетинг і товарознавство", "Комп'ютерна інженерія", 
 ]
