@@ -6,6 +6,7 @@ API_TOKEN = "5403738951:AAEbbME_mAhs9sVAQxvy9KYGG5MjktTfaW8"
 #тестовий
 #API_TOKEN = "5718594262:AAFrlaZpViF_e2AVCiqQjbh7JqZ9JEzVKR4"
 
+
 DEPARTMENTS = [
     "Економічне відділення", "Маркетинг і товарознавство", "Комп'ютерна інженерія", 
 ]
