@@ -14,7 +14,7 @@ from stuff.database import db
 
 # webhook settings
 WEBHOOK_HOST = "https://aiogramnubipbot.herokuapp.com"
-WEBHOOK_PATH = f"/webhook/{API_TOKEN}"
+WEBHOOK_PATH = f"/{API_TOKEN}"
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
 
