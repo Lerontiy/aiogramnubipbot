@@ -1,0 +1,6 @@
+git add .
+git commit -m "My first commit"
+git push heroku master
+
+heroku ps:scale worker=0
+heroku logs --tail
