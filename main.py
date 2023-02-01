@@ -68,7 +68,7 @@ async def main():
     #    await asyncio.sleep(0)
 
 
-    start_webhook(
+    await start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,
         on_startup=on_startup,
