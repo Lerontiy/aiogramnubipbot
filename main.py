@@ -56,7 +56,7 @@ async def periodic1():
 
 async def periodic2():
     while True:
-        await asyncio.sleep(2)
+        await asyncio.sleep(5)
         print("periodic2")
  
 
