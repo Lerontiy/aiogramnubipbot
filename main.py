@@ -42,32 +42,7 @@ async def on_shutdown(dp):
     await bot.delete_webhook()   
 
 
-
-# periodic task
-async def periodic():
-    # loop forever
-    while True:
-        # perform operation
-        print('>task is running')
-        # block for an interval
-        await asyncio.sleep(1)
- 
-# entry point coroutine
-async def main():
-    # report a message
-    print('Main is starting')
-    # start the periodic task
-    _ = asyncio.create_task(periodic())
-    # report a message
-    #print('Main is resuming with work...')
-    # wait a while for some reason
-    #await asyncio.sleep(2)
-    # report a message
-
-    #while True:
-    #    await asyncio.sleep(0)
-
-
+async def periodic1():
     await start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,
@@ -78,19 +53,21 @@ async def main():
         port=int(os.environ.get("PORT", WEBAPP_PORT)),
     )
 
-    print('Main is done')
 
+async def periodic2():
+    while True:
+        await asyncio.sleep(2)
+        print("periodic2")
+ 
+ 
+async def main():
+    _2 = asyncio.create_task(periodic2())
+    _1 = asyncio.create_task(periodic1())
 
+    while True:
+        await asyncio.sleep(0)
+ 
 
 if __name__ == '__main__':
     #asyncio.run(main())
-
-    start_webhook(
-        dispatcher=dp,
-        webhook_path=WEBHOOK_PATH,
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        skip_updates=False,
-        host=WEBAPP_HOST,
-        port=int(os.environ.get("PORT", WEBAPP_PORT)),
-    )
+    asyncio.run(main())

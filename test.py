@@ -1,32 +1,26 @@
 # SuperFastPython.com
 # example of a sleep in a periodic task
 import asyncio
+import time
  
 # periodic task
-async def periodic():
+async def periodic1():
     # loop forever
     while True:
-        # perform operation
-        print('>task is running')
-        # block for an interval
         await asyncio.sleep(1)
+        print('periodic1')
+
+
+async def periodic2():
+    while True:
+        await asyncio.sleep(2)
+        print("periodic2")
  
-# entry point coroutine
 async def main():
-    # report a message
-    print('Main is starting')
-    # start the periodic task
-    _ = asyncio.create_task(periodic())
-    # report a message
-    print('Main is resuming with work...')
-    # wait a while for some reason
-    await asyncio.sleep(2)
-    # report a message
+    _2 = asyncio.create_task(periodic2())
+    _1 = asyncio.create_task(periodic1())
 
     while True:
         await asyncio.sleep(0)
-
-    print('Main is done')
  
-# start the asyncio program
 asyncio.run(main())
