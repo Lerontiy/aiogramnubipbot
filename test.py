@@ -2,7 +2,8 @@
 # example of a sleep in a periodic task
 import asyncio
 import time
- 
+
+
 
 async def periodic1():
     cou = int()
@@ -39,17 +40,21 @@ async def gg_wp():
 
 
 def doof():
-    asyncio.create_task(periodic2())
+    loop.create_task(periodic2())
 
+    return 1
+
+loop = asyncio.get_event_loop()
     
 async def main():
     #asyncio.create_task(periodic2())
-    asyncio.create_task(gg_wp())
-    asyncio.create_task(periodic1())
+    loop.create_task(gg_wp())
+    loop.create_task(periodic1())
 
     print("main")
 
     while True:
+        
         await asyncio.sleep(10)
         print("main після 10 секунд")
 
@@ -57,9 +62,9 @@ async def main():
 
 
 #main()
-asyncio.run(main())
+#asyncio.run(main())
 
 #loop = asyncio.new_event_loop()
 #
 #asyncio.set_event_loop(loop)
-#loop.run_until_complete(main())
+loop.run_until_complete(main())
