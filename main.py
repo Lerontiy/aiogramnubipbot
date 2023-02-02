@@ -47,10 +47,10 @@ async def on_shutdown(dp):
 
 
 
-loop = asyncio.new_event_loop()
+loop_ = asyncio.new_event_loop()
 
 async def ggwp():
-    await loop.create_task(start_webhook(
+    await loop_.create_task(start_webhook(
                     dispatcher=dp,
                     webhook_path=WEBHOOK_PATH,
                     on_startup=on_startup,
@@ -58,12 +58,12 @@ async def ggwp():
                     skip_updates=False,
                     host=WEBAPP_HOST,
                     port=int(os.environ.get("PORT", WEBAPP_PORT)),
-                    loop=loop,
+                    loop=loop_,
                     ))
 
     
 async def main():
-    loop.create_task(ggwp())
+    loop_.create_task(ggwp())
 
     print("main")
 
@@ -74,7 +74,7 @@ async def main():
 
 if __name__ == '__main__':
     #asyncio.run(main())
-    loop.run_until_complete(main())
+    loop_.run_until_complete(main())
     
     #start_webhook(
     #            dispatcher=dp,
