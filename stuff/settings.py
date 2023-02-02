@@ -13,8 +13,8 @@ WEBHOOK_PATH = f"/{API_TOKEN}"
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
 # webserver settings
-WEBAPP_HOST = "0.0.0.0"
-#WEBAPP_HOST = "localhost"
+#WEBAPP_HOST = "0.0.0.0"
+WEBAPP_HOST = "localhost"
 WEBAPP_PORT = 5000
 
 

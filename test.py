@@ -11,18 +11,11 @@ async def periodic1():
     #await asyncio.sleep(0)
 
     while True:
-        await asyncio.sleep(1)
         cou += 1
         print('periodic1:', cou)
 
 
-async def periodic3():
-    cou = int()
 
-    while True:
-        await asyncio.sleep(2)
-        cou += 1
-        print("periodic3:", cou)
 
 
 async def periodic2():
@@ -33,7 +26,13 @@ async def periodic2():
         cou += 1
         print("periodic2:", cou)
 
+async def periodic3():
+    cou = int()
 
+    while True:
+        await asyncio.sleep(2)
+        cou += 1
+        print("periodic3:", cou)
 async def gg_wp():
     #asyncio.run()
     await loop.create_task(periodic2())
@@ -72,12 +71,33 @@ async def go():
 
     loop.run_forever()
 
+
+
+async def periodic1():
+    cou = int()
+    #asyncio.create_task(periodic3())
+    #await asyncio.sleep(0)
+
+    while cou < 5:
+        cou += 1
+        print('periodic1:', cou)
+
+async def periodic2():
+    cou = int()
+
+    while True:
+        await asyncio.sleep(3)
+        cou += 1
+        print("AAAAAAAAAAAAAAAAA:", cou)
+
+
 loop.create_task(periodic1())
 
 print("AAAA")
 
 loop.create_task(periodic2())
 
+#loop.run_forever()
 loop.run_forever()
 
 
