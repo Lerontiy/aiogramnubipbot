@@ -289,11 +289,11 @@ async def stud_group(callback: types.CallbackQuery):
             
     acc_ikm.add(InlineKeyboardButton(text="« Назад до відділень", callback_data=f"studdep_{course}_{acc_action}"))
 
-    #try:
-    return await bot.edit_message_text(chat_id=callback.from_user.id,\
-        message_id=callback.message.message_id, text="Обери свою групу:", reply_markup=acc_ikm)
-    #except:
-    #    pass
+    try:
+        return await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text="Обери свою групу:", reply_markup=acc_ikm)
+    except:
+        pass
 # /група студенти
 
 # день тижня студенти

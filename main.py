@@ -78,7 +78,7 @@ if __name__ == '__main__':
     #asyncio.run(main)
     #loop.create_task(main())
     asyncio.gather(
-        main(),
+        loop.create_task(main()),
         start_webhook(
             dispatcher=dp,
             webhook_path=WEBHOOK_PATH,
