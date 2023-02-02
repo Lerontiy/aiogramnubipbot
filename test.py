@@ -49,8 +49,8 @@ loop = asyncio.new_event_loop()
     
 async def main():
     #asyncio.create_task(periodic2())
-    loop.create_task(gg_wp())
-    loop.create_task(periodic1())
+    #loop.create_task(gg_wp())
+    await loop.create_task(periodic1())
 
     print("main")
 
