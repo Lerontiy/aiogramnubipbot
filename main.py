@@ -36,56 +36,41 @@ async def on_startup(dp):
     await bot.set_webhook(WEBHOOK_URL) 
 
 
+
 async def on_shutdown(dp):
     logging.warning('Shutting down..')
 
     await bot.delete_webhook()   
 
 
-async def periodic1():
-    await start_webhook(
-        dispatcher=dp,
-        webhook_path=WEBHOOK_PATH,
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        skip_updates=False,
-        host=WEBAPP_HOST,
-        port=int(os.environ.get("PORT", WEBAPP_PORT)),
-    )
-
-
-async def periodic2():
-    while True:
-        await asyncio.sleep(5)
-        print("periodic2")
- 
-
+    
 async def main():
-    _2 = await asyncio.create_task(periodic2())
-    _1 = await asyncio.create_task(start_webhook(
-                            dispatcher=dp,
-                            webhook_path=WEBHOOK_PATH,
-                            on_startup=on_startup,
-                            on_shutdown=on_shutdown,
-                            skip_updates=False,
-                            host=WEBAPP_HOST,
-                            port=int(os.environ.get("PORT", WEBAPP_PORT)),
-                            ))
+    asyncio.create_task(start_webhook(
+                        dispatcher=dp,
+                        webhook_path=WEBHOOK_PATH,
+                        on_startup=on_startup,
+                        on_shutdown=on_shutdown,
+                        skip_updates=False,
+                        host=WEBAPP_HOST,
+                        port=int(os.environ.get("PORT", WEBAPP_PORT)),
+                        ))
+
+    print("main")
 
     while True:
-        await asyncio.sleep(0)
- 
+        await asyncio.sleep(10)
+        print("main після 10 секунд")
+  
 
 if __name__ == '__main__':
-    #asyncio.run(main())
-    #asyncio.run(main())
-
-    start_webhook(
-                dispatcher=dp,
-                webhook_path=WEBHOOK_PATH,
-                on_startup=on_startup,
-                on_shutdown=on_shutdown,
-                skip_updates=False,
-                host=WEBAPP_HOST,
-                port=int(os.environ.get("PORT", WEBAPP_PORT)),
-                )
+    asyncio.run(main())
+    
+    #start_webhook(
+    #            dispatcher=dp,
+    #            webhook_path=WEBHOOK_PATH,
+    #            on_startup=on_startup,
+    #            on_shutdown=on_shutdown,
+    #            skip_updates=False,
+    #            host=WEBAPP_HOST,
+    #            port=int(os.environ.get("PORT", WEBAPP_PORT)),
+    #            )

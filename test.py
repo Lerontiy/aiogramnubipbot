@@ -3,32 +3,67 @@
 import asyncio
 import time
  
-# periodic task
+
+loop = asyncio.new_event_loop()
+
+
+async def gg_wp():
+    #asyncio.run()
+    await periodic1()
+
+def good():    
+    loop.create_task(periodic3())
+
+
 async def periodic1():
     cou = int()
-    
-    # loop forever
+    #asyncio.create_task(periodic3())
+    #await asyncio.sleep(0)
+
+    while True:
+        await asyncio.sleep(1)
+        cou += 1
+        print('periodic1:', cou)
+
+
+async def periodic3():
+    cou = int()
+
     while True:
         await asyncio.sleep(2)
         cou += 1
-        print('periodic1:', cou)
+        print("periodic3:", cou)
 
 
 async def periodic2():
     cou = int()
 
     while True:
-        await asyncio.sleep(4)
+        await asyncio.sleep(3)
         cou += 1
         print("periodic2:", cou)
- 
+
+
+
+    
 async def main():
-    _2 = asyncio.create_task(periodic2())
-    _1 = asyncio.create_task(periodic1())
+    asyncio.create_task(periodic2())
+    #asyncio.create_task(gg_wp())
+    asyncio.create_task(periodic1())
 
     print("main")
 
     while True:
-        await asyncio.sleep(0)
- 
+        await asyncio.sleep(10)
+        print("main після 10 секунд")
+
+#asyncio.run(periodic1())
+
+
+#main()
 asyncio.run(main())
+
+#loop = asyncio.new_event_loop()
+#
+#asyncio.set_event_loop(loop)
+#loop.run_until_complete(main())

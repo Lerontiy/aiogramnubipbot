@@ -1,6 +1,8 @@
 from aiogram import  Dispatcher, types
 from aiogram.dispatcher.filters import Text
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+import asyncio
+
 
 from create_bot import bot
 from stuff.settings import DEPARTMENTS, WEEKDAYS, SKIP_TR, SUBJECTS
@@ -198,6 +200,7 @@ async def teach_parse(callback: types.CallbackQuery):
 
 # курс
 async def stud_course(callback: types.CallbackQuery):
+    await asyncio.sleep(0)
     #try:
     #    await bot.edit_message_text(chat_id=callback.from_user.id,\
     #        message_id=callback.message.message_id, text="Зачекай...")
@@ -225,6 +228,8 @@ async def stud_course(callback: types.CallbackQuery):
 
 # відділення студенти
 async def stud_department(callback:types.CallbackQuery):
+    await asyncio.sleep(0)
+
     #try:
     #    await bot.edit_message_text(chat_id=callback.from_user.id,\
     #        message_id=callback.message.message_id, text="Зачекай...")
@@ -253,6 +258,8 @@ async def stud_department(callback:types.CallbackQuery):
 
 # група студенти
 async def stud_group(callback: types.CallbackQuery):
+    await asyncio.sleep(0)
+    
     #try:
     #    await bot.edit_message_text(chat_id=callback.from_user.id,\
     #        message_id=callback.message.message_id, text="Зачекай...")
