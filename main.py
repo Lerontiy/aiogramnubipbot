@@ -48,6 +48,8 @@ async def on_shutdown(dp):
 
 
 loop_ = asyncio.new_event_loop()
+queue = asyncio.Queue(loop=loop_)
+
 
 async def ggwp():
     await loop_.create_task(start_webhook(
