@@ -64,15 +64,16 @@ async def ggwp():
 
     
 async def main():
-    asyncio.create_task(start_webhook(
-                    dispatcher=dp,
-                    webhook_path=WEBHOOK_PATH,
-                    on_startup=on_startup,
-                    on_shutdown=on_shutdown,
-                    skip_updates=False,
-                    host=WEBAPP_HOST,
-                    port=int(os.environ.get("PORT", WEBAPP_PORT)),
-                    ))
+    start_webhook(
+                dispatcher=dp,
+                webhook_path=WEBHOOK_PATH,
+                on_startup=on_startup,
+                on_shutdown=on_shutdown,
+                skip_updates=False,
+                host=WEBAPP_HOST,
+                port=int(os.environ.get("PORT", WEBAPP_PORT)),
+                loop=loop,
+                )
 
     print("main")
 

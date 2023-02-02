@@ -65,7 +65,7 @@ async def main():
         print("main після 10 секунд")
 
 
-loop.run_until_complete(main())
+asyncio.run(main())
     
 
 #asyncio.run(periodic1())
