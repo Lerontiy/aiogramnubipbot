@@ -10,7 +10,7 @@ async def periodic1():
     #asyncio.create_task(periodic3())
     #await asyncio.sleep(0)
 
-    while True:
+    while cou < 5:
         await asyncio.sleep(1)
         cou += 1
         print('periodic1:', cou)
@@ -44,23 +44,28 @@ def doof():
 
     return 1
 
+loop1 = asyncio.new_event_loop()
 loop = asyncio.new_event_loop()
+
 #loop = asyncio.eve
     
 import nest_asyncio
 nest_asyncio.apply()
 
-async def main():
-    while True:
-        await asyncio.sleep(10)
-        print("main після 10 секунд")
 
-    loop.create_task(periodic2())
+async def main():
+    asyncio.create_task(periodic2())
     #loop.create_task(gg_wp())
     loop.create_task(periodic1())
 
     print("main")
 
+    while True:
+        await asyncio.sleep(10)
+        print("main після 10 секунд")
+
+
+loop.run_until_complete(main())
     
 
 #asyncio.run(periodic1())
@@ -72,4 +77,3 @@ async def main():
 #loop = asyncio.new_event_loop()
 #
 #asyncio.set_event_loop(loop)
-loop.run_until_complete(main())
