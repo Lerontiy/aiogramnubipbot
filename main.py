@@ -1,3 +1,4 @@
+import requests
 import asyncio
 import logging
 import os
@@ -66,9 +67,12 @@ async def ggwp():
 async def main():
     print("main")
 
+    url = 'https://aiogramnubipbot.herokuapp.com'
+    headers = {'User-Agent': 'Mozilla/5.0'}
+
     while True:
         await asyncio.sleep(2)
-        print("main після 2 секунд")
+        r = await requests.get(url, headers=headers)
   
 
 if __name__ == '__main__':
