@@ -43,8 +43,7 @@ async def on_shutdown(dp):
     await bot.delete_webhook()   
 
 
-    
-async def main():
+async def ggwp():
     asyncio.create_task(start_webhook(
                         dispatcher=dp,
                         webhook_path=WEBHOOK_PATH,
@@ -54,6 +53,10 @@ async def main():
                         host=WEBAPP_HOST,
                         port=int(os.environ.get("PORT", WEBAPP_PORT)),
                         ))
+
+    
+async def main():
+    asyncio.create_task(ggwp())
 
     print("main")
 

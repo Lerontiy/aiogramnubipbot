@@ -4,17 +4,6 @@ import asyncio
 import time
  
 
-loop = asyncio.new_event_loop()
-
-
-async def gg_wp():
-    #asyncio.run()
-    await periodic1()
-
-def good():    
-    loop.create_task(periodic3())
-
-
 async def periodic1():
     cou = int()
     #asyncio.create_task(periodic3())
@@ -44,11 +33,18 @@ async def periodic2():
         print("periodic2:", cou)
 
 
+async def gg_wp():
+    #asyncio.run()
+    await doof()
+
+
+def doof():
+    asyncio.create_task(periodic2())
 
     
 async def main():
-    asyncio.create_task(periodic2())
-    #asyncio.create_task(gg_wp())
+    #asyncio.create_task(periodic2())
+    asyncio.create_task(gg_wp())
     asyncio.create_task(periodic1())
 
     print("main")
