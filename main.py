@@ -44,10 +44,10 @@ async def on_shutdown(dp):
 
 
 
-loop = asyncio.get_event_loop()
+loop = asyncio.new_event_loop()
 
 async def ggwp():
-    loop.create_task(start_webhook(
+    await loop.create_task(start_webhook(
                         dispatcher=dp,
                         webhook_path=WEBHOOK_PATH,
                         on_startup=on_startup,

@@ -36,15 +36,16 @@ async def periodic2():
 
 async def gg_wp():
     #asyncio.run()
-    await doof()
+    await loop.create_task(periodic2())
 
 
 def doof():
-    loop.create_task(periodic2())
+    return loop.create_task(periodic2())
 
     return 1
 
-loop = asyncio.get_event_loop()
+loop = asyncio.new_event_loop()
+#loop = asyncio.eve
     
 async def main():
     #asyncio.create_task(periodic2())
