@@ -51,16 +51,17 @@ import nest_asyncio
 nest_asyncio.apply()
 
 async def main():
+    while True:
+        await asyncio.sleep(10)
+        print("main після 10 секунд")
+
     loop.create_task(periodic2())
     #loop.create_task(gg_wp())
     loop.create_task(periodic1())
 
     print("main")
 
-    while True:
-        
-        await asyncio.sleep(10)
-        print("main після 10 секунд")
+    
 
 #asyncio.run(periodic1())
 
