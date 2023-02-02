@@ -64,7 +64,7 @@ async def ggwp():
 
     
 async def main():
-    await asyncio.create_task(start_webhook(
+    asyncio.create_task(start_webhook(
                     dispatcher=dp,
                     webhook_path=WEBHOOK_PATH,
                     on_startup=on_startup,
