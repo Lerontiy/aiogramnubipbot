@@ -64,7 +64,20 @@ async def ggwp():
 
     
 async def main():
-    await start_webhook(
+    print("main")
+
+    while True:
+        await asyncio.sleep(10)
+        print("main після 10 секунд")
+  
+
+if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
+
+    #asyncio.run(main())
+    #asyncio.run(main)
+    
+    start_webhook(
                 dispatcher=dp,
                 webhook_path=WEBHOOK_PATH,
                 on_startup=on_startup,
@@ -75,23 +88,4 @@ async def main():
                 loop=loop,
                 )
 
-    print("main")
-
-    while True:
-        await asyncio.sleep(10)
-        print("main після 10 секунд")
-  
-
-if __name__ == '__main__':
-    #asyncio.run(main())
-    loop.run_until_complete(main())
-    
-    #start_webhook(
-    #            dispatcher=dp,
-    #            webhook_path=WEBHOOK_PATH,
-    #            on_startup=on_startup,
-    #            on_shutdown=on_shutdown,
-    #            skip_updates=False,
-    #            host=WEBAPP_HOST,
-    #            port=int(os.environ.get("PORT", WEBAPP_PORT)),
-    #            )
+    loop.create_task(main())
