@@ -72,7 +72,6 @@ async def main():
                     skip_updates=False,
                     host=WEBAPP_HOST,
                     port=int(os.environ.get("PORT", WEBAPP_PORT)),
-                    loop=loop,
                     ))
 
     print("main")
