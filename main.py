@@ -2,6 +2,9 @@ import asyncio
 import logging
 import os
 
+import nest_asyncio
+nest_asyncio.apply()
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
@@ -60,7 +63,7 @@ async def ggwp():
 
     
 async def main():
-    await loop.create_task(start_webhook(
+    loop.create_task(start_webhook(
                     dispatcher=dp,
                     webhook_path=WEBHOOK_PATH,
                     on_startup=on_startup,
