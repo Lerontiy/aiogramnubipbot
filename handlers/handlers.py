@@ -106,7 +106,9 @@ async def settings(message: types.Message):
 
     set_ikm = InlineKeyboardMarkup()
 
-    if db.get_acctype(message.from_id)==None:
+    l = [None, '']
+
+    if db.get_acctype(message.from_id) in l:
         text = "Створити новий акаунт"
     else:
         text = "Внести зміни в акаунт"
