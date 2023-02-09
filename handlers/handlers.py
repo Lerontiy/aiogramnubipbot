@@ -109,7 +109,7 @@ async def settings(message: types.Message):
     l = [None, '']
 
     if db.get_acctype(message.from_id) in l:
-        text = "Створити новий акаунт"
+        text = "Створити акаунт"
     else:
         text = "Внести зміни в акаунт"
 
