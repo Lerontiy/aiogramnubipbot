@@ -481,7 +481,7 @@ async def stud_parse(callback:types.CallbackQuery):
         pass
             
             
-    del num, thtml, el_tr, el_td, iter_td, headers, html, text, studfind_ikm
+    del num, thtml, el_tr, el_td, iter_td, html, text, studfind_ikm
 # /парсинг розкладу студенти
 
 # /блок для студентів
