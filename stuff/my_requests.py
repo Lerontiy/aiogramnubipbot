@@ -27,6 +27,7 @@ class Request:
     def get_weekday_html(self, weekday):    
         for iter, el in enumerate(self.weekdays_html):
             if (iter == weekday):
+                print(el)
                 return el
 
 
