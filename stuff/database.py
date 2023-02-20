@@ -30,7 +30,7 @@ class Database:
                 cur.execute(f"INSERT INTO users(user_id) VALUES ('{user_id}')")
                 self.con = con
                 con.commit()
-            
+            print("A")
             return
             #cur.execute(f"UPDATE users SET username='{user_username}' WHERE user_id='{user_id}'")
 
