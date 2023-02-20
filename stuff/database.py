@@ -19,20 +19,18 @@ class Database:
         
 
     def check_user_in_db(self, user_id):
-        with self.con.cursor() as cur:
-            #cur = con.cursor()
+        with self.con() as con:
+            cur = con.cursor()
 
             cur.execute(f"SELECT user_id FROM users WHERE user_id='{user_id}'")
             db_user_id = cur.fetchone()
             
 
             if db_user_id==None:
-                with self.con() as con:
-                    con.cursor().execute(f"INSERT INTO users(user_id) VALUES ('{user_id}')")
-                    self.con = con
-                    con.commit()
+                cur.execute(f"INSERT INTO users(user_id) VALUES ('{user_id}')")
+                self.con = con
+                con.commit()
 
-            print("A")
             return
             #cur.execute(f"UPDATE users SET username='{user_username}' WHERE user_id='{user_id}'")
 
