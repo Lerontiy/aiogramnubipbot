@@ -349,7 +349,7 @@ async def stud_parse(callback:types.CallbackQuery):
         if iter == int(dep):
             num = iter
             break
-    del iter, el, title
+    del iter, el
 
     for iter,el in enumerate(html.select("#sheets-viewport > div")):
         if (iter==num):
