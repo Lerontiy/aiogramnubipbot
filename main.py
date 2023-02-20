@@ -66,7 +66,7 @@ async def main():
 
 if __name__ == '__main__':
     
-    printit()
+    #printit()
 
     loop = asyncio.new_event_loop()
 
