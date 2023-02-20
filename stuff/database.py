@@ -19,17 +19,19 @@ class Database:
         
 
     def check_user_in_db(self, user_id):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
+            #cur = con.cursor()
 
             cur.execute(f"SELECT user_id FROM users WHERE user_id='{user_id}'")
             db_user_id = cur.fetchone()
             
 
             if db_user_id==None:
-                self.con().cursor().execute(f"INSERT INTO users(user_id) VALUES ('{user_id}')")
-                self.con = con
-                con.commit()
+                with self.con() as con:
+                    con.cursor().execute(f"INSERT INTO users(user_id) VALUES ('{user_id}')")
+                    self.con = con
+                    con.commit()
+
             print("A")
             return
             #cur.execute(f"UPDATE users SET username='{user_username}' WHERE user_id='{user_id}'")
@@ -39,8 +41,7 @@ class Database:
 
 
     def user_is_admin(self, user_id):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             cur.execute(f"SELECT is_admin FROM users WHERE user_id='{user_id}'")
             is_user_admin = cur.fetchone()[0]
 
@@ -51,36 +52,31 @@ class Database:
 
 
     def get_group(self, user_id):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             cur.execute(f"SELECT user_group FROM users WHERE user_id='{user_id}'")
             return cur.fetchone()[0]
 
 
     def get_acctype(self, user_id):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             cur.execute(f"SELECT type FROM users WHERE user_id='{user_id}'")
             return cur.fetchone()[0]
 
 
     def get_department_by_group(self, group):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             cur.execute(f"SELECT department FROM groups WHERE name_group='{group}'")
             return cur.fetchone()[0]
 
         
     def get_all_departments_by_course(self, course):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             cur.execute(f"SELECT DISTINCT department FROM groups WHERE course='{course}'")
             return cur.fetchall()
 
 
     def get_course_by_group(self, group):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             cur.execute(f"SELECT course FROM groups WHERE name_group='{group}'")
             return cur.fetchone()[0]
 
@@ -116,15 +112,13 @@ class Database:
 
 
     def get_all_groups_by_dep_and_cour(self, department, course):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             cur.execute(f"SELECT name_group FROM groups WHERE course='{course}' AND department='{department}'")
             return cur.fetchall()
 
 
     def is_created_account(self, user_id):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             cur.execute(f"SELECT type FROM groups WHERE user_id='{user_id}'")
             type = cur.fetchone()[0]
 
@@ -135,8 +129,7 @@ class Database:
 
 
     def get_all_user_id(self):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             cur.execute("SELECT user_id FROM users")
             return cur.fetchall()
 
@@ -169,8 +162,7 @@ class Database:
 
 
     def get_user_subjects(self, user_id):
-        with self.con as con:
-            cur = con.cursor()
+        with self.con.cursor() as cur:
             
             cur.execute(f"SELECT subjects FROM users WHERE user_id='{user_id}'")
             return cur.fetchone()[0]
