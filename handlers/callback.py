@@ -8,6 +8,7 @@ from create_bot import bot
 from stuff.settings import DEPARTMENTS, WEEKDAYS, SKIP_TR, SUBJECTS
 from stuff.database import db
 from stuff.marcups import *
+from stuff.my_requests import my_request
 
 from bs4 import BeautifulSoup as BS
 import requests
@@ -341,27 +342,8 @@ async def stud_parse(callback:types.CallbackQuery):
     dep = db.get_department_by_group(group)
 
 
-    url = 'https://iek.irpin.com/for-students/rozklad-zm%D1%96n.html'
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    r = requests.get(url, headers=headers)
-    html = BS(r.content, 'html.parser')
-    del r, url
+    html = my_request.get_weekday_html(weekday)
 
-    # перебираєм посилання на день тижня
-    for iter,el in enumerate(html.select(".content > .row > p")):        
-        # ідентифікуємо потрібний день тижня
-        if iter == weekday:
-            title = el.select("a")
-            url = title[0].get('href')
-
-            break
-    del iter, el
-
-    # зміни до розкладу
-    url = url
-    r = requests.get(url, headers=headers)
-    html = BS(r.content, 'html.parser')
-    del r, url
     # ЕВ/Маркетинг/КІ/Аудиторії
     for iter,el in enumerate(html.select("#sheet-menu > li")):
         if iter == int(dep):

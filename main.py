@@ -1,5 +1,3 @@
-import threading
-import requests
 import asyncio
 import logging
 import os
@@ -16,6 +14,7 @@ from aiogram import types
 from create_bot import dp, bot
 from stuff.settings import MESSAGES, WEBHOOK_PATH, WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
 from stuff.database import db
+from stuff.my_requests import update_weekdays_html
 
 # мінус 2 години в heroku logs
 
@@ -36,10 +35,8 @@ async def nothing(message: types.Message):
         await message.answer(text=MESSAGES["HELP_MESS"], parse_mode='html')
 
 
-
 async def on_startup(dp):
     await bot.set_webhook(WEBHOOK_URL) 
-
 
 
 async def on_shutdown(dp):
@@ -48,16 +45,7 @@ async def on_shutdown(dp):
     await bot.delete_webhook()   
 
 
-def printit():
-    threading.Timer(5.0, printit).start()
-    print("Hello, World!")
-  
-
-
 if __name__ == '__main__':
-    
-    #printit()
-
     loop = asyncio.new_event_loop()
 
     start_webhook(
