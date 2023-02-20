@@ -51,18 +51,8 @@ async def on_shutdown(dp):
 def printit():
     threading.Timer(5.0, printit).start()
     print("Hello, World!")
-
-
-async def main():
-    print("main")
-
-    url = 'https://aiogramnubipbot.herokuapp.com'
-    headers = {'User-Agent': 'Mozilla/5.0'}
-
-    while True:
-        await asyncio.sleep(2)
-        r = await requests.get(url, headers=headers)
   
+
 
 if __name__ == '__main__':
     

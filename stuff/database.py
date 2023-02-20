@@ -5,10 +5,8 @@ import pymysql
 from stuff.settings import SUBJECTS
 
 class Database:
-    #def __init__(self, db_file):
-    #    self.con = sqlite3.connect(db_file)
-    #def __init__(self, host, user, password, database, port):
-    #    self.con = pymysql.connect(host=host, user=user, password=password, database=database, port=port)
+    def __init__(self):
+        self.con = self.con()
 
 
     def con(self):
@@ -30,7 +28,7 @@ class Database:
 
             if db_user_id==None:
                 cur.execute(f"INSERT INTO users(user_id) VALUES ('{user_id}')")
-
+                self.con = con
                 con.commit()
             
             return
@@ -39,13 +37,10 @@ class Database:
             #cur.execute(f"SELECT user_id FROM users")
             #print(cur.fetchall())
 
-            
-
-            
-
 
     def user_is_admin(self, user_id):
-        with self.con().cursor() as cur:
+        with self.con as con:
+            cur = con.cursor()
             cur.execute(f"SELECT is_admin FROM users WHERE user_id='{user_id}'")
             is_user_admin = cur.fetchone()[0]
 
@@ -56,34 +51,36 @@ class Database:
 
 
     def get_group(self, user_id):
-        
-        with self.con().cursor() as cur:
-            cur.execute(f"SELECT * FROM users WHERE user_id='{user_id}'")
-            
+        with self.con as con:
+            cur = con.cursor()
             cur.execute(f"SELECT user_group FROM users WHERE user_id='{user_id}'")
             return cur.fetchone()[0]
 
 
     def get_acctype(self, user_id):
-        with self.con().cursor() as cur:
+        with self.con as con:
+            cur = con.cursor()
             cur.execute(f"SELECT type FROM users WHERE user_id='{user_id}'")
             return cur.fetchone()[0]
 
 
     def get_department_by_group(self, group):
-        with self.con().cursor() as cur:
+        with self.con as con:
+            cur = con.cursor()
             cur.execute(f"SELECT department FROM groups WHERE name_group='{group}'")
             return cur.fetchone()[0]
 
         
     def get_all_departments_by_course(self, course):
-        with self.con().cursor() as cur:
+        with self.con as con:
+            cur = con.cursor()
             cur.execute(f"SELECT DISTINCT department FROM groups WHERE course='{course}'")
             return cur.fetchall()
 
 
     def get_course_by_group(self, group):
-        with self.con().cursor() as cur:
+        with self.con as con:
+            cur = con.cursor()
             cur.execute(f"SELECT course FROM groups WHERE name_group='{group}'")
             return cur.fetchone()[0]
 
@@ -114,17 +111,20 @@ class Database:
             cur = con.cursor()
 
             cur.execute(f"UPDATE users SET type='{_type}', {arg}='{(text)}' WHERE user_id='{user_id}'")
+            self.con = con
             return con.commit()
 
 
     def get_all_groups_by_dep_and_cour(self, department, course):
-        with self.con().cursor() as cur:
+        with self.con as con:
+            cur = con.cursor()
             cur.execute(f"SELECT name_group FROM groups WHERE course='{course}' AND department='{department}'")
             return cur.fetchall()
 
 
     def is_created_account(self, user_id):
-        with self.con().cursor() as cur:
+        with self.con as con:
+            cur = con.cursor()
             cur.execute(f"SELECT type FROM groups WHERE user_id='{user_id}'")
             type = cur.fetchone()[0]
 
@@ -135,7 +135,8 @@ class Database:
 
 
     def get_all_user_id(self):
-        with self.con().cursor() as cur:
+        with self.con as con:
+            cur = con.cursor()
             cur.execute("SELECT user_id FROM users")
             return cur.fetchall()
 
@@ -145,6 +146,7 @@ class Database:
             cur = con.cursor()
 
             cur.execute(f"DELETE FROM users WHERE user_id='{user_id}'")
+            self.con = con
             return con.commit()
 
 
@@ -153,6 +155,7 @@ class Database:
             cur = con.cursor()
 
             cur.execute(f"UPDATE users SET is_admin=1 WHERE user_id='{user_id}'")
+            self.con = con
             return con.commit()
 
 
@@ -161,11 +164,13 @@ class Database:
             cur = con.cursor()
 
             cur.execute(f"UPDATE users SET is_admin={type} WHERE user_id='{user_id}'")
+            self.con = con
             return con.commit()
 
 
     def get_user_subjects(self, user_id):
-        with self.con().cursor() as cur:
+        with self.con as con:
+            cur = con.cursor()
             
             cur.execute(f"SELECT subjects FROM users WHERE user_id='{user_id}'")
             return cur.fetchone()[0]
