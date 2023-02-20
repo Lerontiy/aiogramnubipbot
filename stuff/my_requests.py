@@ -7,13 +7,17 @@ def update_weekdays_html():
     url = 'https://iek.irpin.com/for-students/rozklad-zm%D1%96n.html'        
     r = requests.get(url, headers=my_request.headers)
     html = BS(r.content, 'html.parser')
+    l = list()
     
     for el in html.select(".content > .row > p"):        
         title = el.select("a")
         url = title[0].get('href')
         r = requests.get(url, headers=my_request.headers)
-        my_request.weekdays_html.append(BS(r.content, 'html.parser'))
-    del el, title, url, r
+        l.append(BS(r.content, 'html.parser'))
+
+    my_request.weekdays_html = l
+    
+    del el, title, url, r, l
 
     threading.Timer(60*5, update_weekdays_html).start()
 
