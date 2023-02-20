@@ -46,6 +46,8 @@ async def on_shutdown(dp):
 
 
 if __name__ == '__main__':
+    update_weekdays_html()
+
     loop = asyncio.new_event_loop()
 
     start_webhook(
