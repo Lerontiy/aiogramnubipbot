@@ -6,10 +6,10 @@ from stuff.settings import SUBJECTS
 
 class Database:
     def __init__(self):
-        self.con = self.con()
+        self.con = self.connect()
 
 
-    def con(self):
+    def connect(self):
         return pymysql.connect(\
                             host="us-cdbr-east-06.cleardb.net", \
                             user="b0bccc5a1c8a3f", \
@@ -19,7 +19,7 @@ class Database:
         
 
     def check_user_in_db(self, user_id):
-        with self.con() as con:
+        with self.connect() as con:
             cur = con.cursor()
 
             cur.execute(f"SELECT user_id FROM users WHERE user_id='{user_id}'")
@@ -101,7 +101,7 @@ class Database:
             text = "-".join(subjects_list)
             
 
-        with self.con() as con:
+        with self.connect() as con:
             cur = con.cursor()
 
             cur.execute(f"UPDATE users SET type='{_type}', {arg}='{(text)}' WHERE user_id='{user_id}'")
@@ -133,7 +133,7 @@ class Database:
 
 
     def delete_user(self, user_id):
-        with self.con() as con:
+        with self.connect() as con:
             cur = con.cursor()
 
             cur.execute(f"DELETE FROM users WHERE user_id='{user_id}'")
@@ -142,7 +142,7 @@ class Database:
 
 
     def set_admin(self, user_id):
-        with self.con() as con:
+        with self.connect() as con:
             cur = con.cursor()
 
             cur.execute(f"UPDATE users SET is_admin=1 WHERE user_id='{user_id}'")
@@ -151,7 +151,7 @@ class Database:
 
 
     def change_acctype(self, user_id, type):
-        with self.con() as con:
+        with self.connect() as con:
             cur = con.cursor()
 
             cur.execute(f"UPDATE users SET is_admin={type} WHERE user_id='{user_id}'")
