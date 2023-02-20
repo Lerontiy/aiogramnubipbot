@@ -16,7 +16,6 @@ def update_weekdays_html():
         l.append(BS(r.content, 'html.parser'))
 
     my_request.weekdays_html = l
-    print(my_request.weekdays_html)
     del el, title, url, r, l
 
     threading.Timer(60*5, update_weekdays_html).start()
@@ -30,9 +29,7 @@ class Request:
 
     def get_weekday_html(self, weekday):    
         for iter, el in enumerate(self.weekdays_html):
-            print(repr(iter), repr(weekday))
             if (iter == weekday):
-                print(el)
                 return el
 
 
