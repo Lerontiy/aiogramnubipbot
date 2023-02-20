@@ -2,9 +2,11 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 
 #нормальний
 API_TOKEN = "5403738951:AAEbbME_mAhs9sVAQxvy9KYGG5MjktTfaW8"
+WEBAPP_HOST = "0.0.0.0"
 
 #тестовий
 #API_TOKEN = "5718594262:AAFrlaZpViF_e2AVCiqQjbh7JqZ9JEzVKR4"
+#WEBAPP_HOST = "0.0.0.0"
 
 
 # webhook settings
@@ -12,10 +14,12 @@ WEBHOOK_HOST = "https://aiogramnubipbot.herokuapp.com"
 WEBHOOK_PATH = f"/{API_TOKEN}"
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
+
 # webserver settings
-WEBAPP_HOST = "0.0.0.0"
-#WEBAPP_HOST = "localhost"
+
+# webapp_host зверху
 WEBAPP_PORT = 5000
+
 
 
 DEPARTMENTS = [

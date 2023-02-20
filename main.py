@@ -1,3 +1,4 @@
+import threading
 import requests
 import asyncio
 import logging
@@ -16,7 +17,7 @@ from create_bot import dp, bot
 from stuff.settings import MESSAGES, WEBHOOK_PATH, WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
 from stuff.database import db
 
-# мінус 2 години в heroku logsd
+# мінус 2 години в heroku logs
 
 from handlers import handlers, callback, admin
 handlers.my_register_message_handler(dp)
@@ -47,23 +48,11 @@ async def on_shutdown(dp):
     await bot.delete_webhook()   
 
 
+def printit():
+    threading.Timer(5.0, printit).start()
+    print("Hello, World!")
 
 
-
-
-async def ggwp():
-    await loop.create_task(start_webhook(
-                    dispatcher=dp,
-                    webhook_path=WEBHOOK_PATH,
-                    on_startup=on_startup,
-                    on_shutdown=on_shutdown,
-                    skip_updates=False,
-                    host=WEBAPP_HOST,
-                    port=int(os.environ.get("PORT", WEBAPP_PORT)),
-                    loop=loop,
-                    ))
-
-    
 async def main():
     print("main")
 
@@ -76,22 +65,20 @@ async def main():
   
 
 if __name__ == '__main__':
+    
+    printit()
+
     loop = asyncio.new_event_loop()
 
-    #asyncio.run(main())
-    #asyncio.run(main)
-    #loop.create_task(main())
-    asyncio.gather(
-        loop.create_task(main()),
-        start_webhook(
-            dispatcher=dp,
-            webhook_path=WEBHOOK_PATH,
-            on_startup=on_startup,
-            on_shutdown=on_shutdown,
-            skip_updates=False,
-            host=WEBAPP_HOST,
-            port=int(os.environ.get("PORT", WEBAPP_PORT)),
-            loop=loop,
-            ))
+    start_webhook(
+        dispatcher=dp,
+        webhook_path=WEBHOOK_PATH,
+        on_startup=on_startup,
+        on_shutdown=on_shutdown,
+        skip_updates=False,
+        host=WEBAPP_HOST,
+        port=int(os.environ.get("PORT", WEBAPP_PORT)),
+        loop=loop,
+        )
 
     
