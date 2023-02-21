@@ -15,6 +15,7 @@ def update_weekdays_html():
     #    r = requests.get(url, headers=my_request.headers)
     #    l.append(BS(r.content, 'html.parser'))
 
+    l = list()
 
     for url in my_request.url_spreadsheets:
         r = requests.get(url, headers=my_request.headers)
