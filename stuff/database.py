@@ -19,23 +19,21 @@ class Database:
         
 
     def check_user_in_db(self, user_id):
-        with self.connect() as con:
+        with self.conn as con:
             cur = con.cursor()
 
             cur.execute(f"SELECT user_id FROM users WHERE user_id='{user_id}'")
             db_user_id = cur.fetchone()
             
 
-            if db_user_id==None:
+        if db_user_id==None:
+            with self.connect() as con:
+                cur = con.cursor()
                 cur.execute(f"INSERT INTO users(user_id) VALUES ('{user_id}')")
                 self.con = con
                 con.commit()
 
-            return
-            #cur.execute(f"UPDATE users SET username='{user_username}' WHERE user_id='{user_id}'")
-
-            #cur.execute(f"SELECT user_id FROM users")
-            #print(cur.fetchall())
+        return
 
 
     def user_is_admin(self, user_id):
