@@ -460,7 +460,7 @@ async def stud_parse(callback:types.CallbackQuery):
             else:
                 send_text.append(f"{iter_les+1}. {el_les}")
         else:
-            if (aud_text[iter_les]=="") or (el_les=="") or ("-" in el_les):
+            if (aud_text[iter_les]=="") or (aud_text[iter_les]=="-") or (el_les=="") or (el_les=="-"):
                 if (el_les==""):
                     send_text.append(f"{iter_les+1}.")
                 else:
