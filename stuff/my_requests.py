@@ -22,7 +22,8 @@ def update_weekdays_html():
         l.append(BS(r.content, 'html.parser'))
 
     my_request.weekdays_html = l
-    del el, title, url, r, l
+    #del el, title, url, r, l
+    del l, r, url
 
     threading.Timer(60*5, update_weekdays_html).start()
 
