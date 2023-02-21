@@ -141,7 +141,7 @@ async def teach_parse(callback: types.CallbackQuery):
                         try:
                             if (subj in el_td.text):
                                 
-                                if (subj in el_td.text) or ((subj[:14]=="Захист України") and (subj[-3:] in el_td.text)):
+                                if (subj in el_td.text) or (("Захист України" in el_td.text) and (subj[-3:-1] in el_td.text)):
                                     if (groups[subj_count]==""):
                                         groups[subj_count] += f"{all_groups[iter_td-1]}"
                                     else:
