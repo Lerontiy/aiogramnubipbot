@@ -181,7 +181,7 @@ async def teach_parse(callback: types.CallbackQuery):
 
 # курс
 async def stud_course(callback: types.CallbackQuery):
-    await asyncio.sleep(0)
+    #await asyncio.sleep(0)
     #try:
     #    await bot.edit_message_text(chat_id=callback.from_user.id,\
     #        message_id=callback.message.message_id, text="Зачекай...")
@@ -209,7 +209,7 @@ async def stud_course(callback: types.CallbackQuery):
 
 # відділення студенти
 async def stud_department(callback:types.CallbackQuery):
-    await asyncio.sleep(0)
+    #await asyncio.sleep(0)
 
     #try:
     #    await bot.edit_message_text(chat_id=callback.from_user.id,\
@@ -239,7 +239,7 @@ async def stud_department(callback:types.CallbackQuery):
 
 # група студенти
 async def stud_group(callback: types.CallbackQuery):
-    await asyncio.sleep(0)
+    #await asyncio.sleep(0)
     
     #try:
     #    await bot.edit_message_text(chat_id=callback.from_user.id,\
