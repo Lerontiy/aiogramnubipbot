@@ -1,8 +1,6 @@
 from aiogram import  Dispatcher, types
 from aiogram.dispatcher.filters import Text
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-import asyncio
-
 
 from create_bot import bot
 from stuff.settings import DEPARTMENTS, WEEKDAYS, SKIP_TR, SUBJECTS
@@ -11,7 +9,6 @@ from stuff.marcups import *
 from stuff.my_requests import my_request
 
 from bs4 import BeautifulSoup as BS
-import requests
 
 
 # блок, коли немає акаунту і треба визначитись з класом (викладач(-ка), студент(-ка))
@@ -107,13 +104,14 @@ async def teach_parse(callback: types.CallbackQuery):
 
     html = my_request.get_weekday_html(weekday)
 
-    groups = ["", "", "", "", ""]
+    groups = [[], [], [], [], []]
     regime = None
     subj = SUBJECTS[subj]
+    day_p_mon = ""
 
     for div in html.select("#sheets-viewport > div"):
         dhtml = BS(str(div), 'html.parser')
-            
+        
         for iter_tr,el_tr in enumerate(dhtml.select("tbody > tr")):
             if (iter_tr in SKIP_TR):
                 continue
@@ -121,7 +119,7 @@ async def teach_parse(callback: types.CallbackQuery):
                 thtml = BS(str(el_tr), 'html.parser')
 
                 for iter_td,el_td in enumerate(thtml.select("td")):
-                    if (iter_tr==1) and (iter_td==0):
+                    if (iter_tr==1) and (iter_td==0) and (day_p_mon==""):
                         data = el_td.text.split(' ')
                         while "" in data: 
                             data.remove("")
@@ -139,13 +137,8 @@ async def teach_parse(callback: types.CallbackQuery):
                         continue
                     elif (regime=="check_subj"):
                         try:
-                            if (subj in el_td.text):
-                                print(subj, subj[-3:-1], el_td.text)
-                                if (subj in el_td.text) or (("Захист України" in el_td.text) and (subj[-3:-1] in el_td.text)):
-                                    if (groups[subj_count]==""):
-                                        groups[subj_count] += f"{all_groups[iter_td-1]}"
-                                    else:
-                                        groups[subj_count] += f", {all_groups[iter_td-1]}"
+                            if (subj in el_td.text) or (("Захист України" in el_td.text) and (subj[-3:-1] in el_td.text)):
+                                groups[subj_count].append(all_groups[iter_td-1])
                         except:
                             pass
 
@@ -156,21 +149,23 @@ async def teach_parse(callback: types.CallbackQuery):
                     subj_count += 1
 
 
-        send_text = [f"<b>{day_p_mon} {subj}</b>"]
-        
-        for iter, el in enumerate(groups):
-            send_text.append(f"{iter+1}. {el}")
+    send_text = [f"<b>{day_p_mon} {subj}</b>"]
 
-        teach_ikm.add(InlineKeyboardButton("« Назад до вибору предмета", callback_data=f"teachchoosesubj_None_{weekday}"))
+    groups = [", ".join(i) for i in groups]
+    
+    for iter, el in enumerate(groups):
+        send_text.append(f"{iter+1}. {el}")
+    
+    teach_ikm.add(InlineKeyboardButton("« Назад до вибору предмета", callback_data=f"teachchoosesubj_None_{weekday}"))
 
-        try:
-            await bot.edit_message_text(chat_id=callback.from_user.id,\
-                message_id=callback.message.message_id, text="\n".join(send_text), parse_mode="html", reply_markup=teach_ikm)
-        except:
-            pass
+    try:
+        await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text="\n".join(send_text), parse_mode="html", reply_markup=teach_ikm)
+    except:
+        pass
 
-        del send_text, regime, groups, all_groups, subj_count, subj, div, iter_tr, el_tr, iter_td, el_td, html, thtml, dhtml, day_p_mon
-        return
+    del send_text, regime, groups, all_groups, subj_count, subj, div, iter_tr, el_tr, iter_td, el_td, html, thtml, dhtml, day_p_mon
+    return
 # /парсинг розкладу викладачі
 
 # /блок для викладачів/викладачок

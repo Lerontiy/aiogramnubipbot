@@ -9,7 +9,7 @@ nest_asyncio.apply()
 logging.basicConfig(level=logging.INFO)
 
 from aiogram.utils.executor import start_webhook
-from aiogram import types
+from aiogram import types, executor
 
 from create_bot import dp, bot
 from stuff.settings import MESSAGES, WEBHOOK_PATH, WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
@@ -50,15 +50,18 @@ if __name__ == '__main__':
 
     loop = asyncio.new_event_loop()
 
-    start_webhook(
-        dispatcher=dp,
-        webhook_path=WEBHOOK_PATH,
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        skip_updates=False,
-        host=WEBAPP_HOST,
-        port=int(os.environ.get("PORT", WEBAPP_PORT)),
-        loop=loop,
-        )
+    #start_webhook(
+    #    dispatcher=dp,
+    #    webhook_path=WEBHOOK_PATH,
+    #    on_startup=on_startup,
+    #    on_shutdown=on_shutdown,
+    #    skip_updates=False,
+    #    host=WEBAPP_HOST,
+    #    port=int(os.environ.get("PORT", WEBAPP_PORT)),
+    #    loop=loop,
+    #    )
+    
+    executor.start_polling(dp, skip_updates=False)
+    
 
     
