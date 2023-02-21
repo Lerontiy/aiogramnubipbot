@@ -105,27 +105,7 @@ async def teach_parse(callback: types.CallbackQuery):
 
     teach_ikm = InlineKeyboardMarkup()
 
-    url = 'https://iek.irpin.com/for-students/rozklad-zm%D1%96n.html'
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    r = requests.get(url, headers=headers)
-    html = BS(r.content, 'html.parser')
-    del r, url
-
-    # перебираєм посилання на день тижня
-    for iter,el in enumerate(html.select(".content > .row > p")):      
-        # ідентифікуємо потрібний день тижня
-        if (iter == weekday):
-            title = el.select("a")
-            url = title[0].get('href')    
-            break
-    del iter, el
-
-
-    # зміни до розкладу
-    url = url
-    r = requests.get(url, headers=headers)
-    html = BS(r.content, 'html.parser')
-    del r, url
+    html = my_request.get_weekday_html(weekday)
 
     groups = ["", "", "", "", ""]
     regime = None
