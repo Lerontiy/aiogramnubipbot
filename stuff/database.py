@@ -19,6 +19,7 @@ class Database:
         
 
     def check_user_in_db(self, user_id):
+        self.con.ping()
         with self.con as con:
             cur = con.cursor()
 
