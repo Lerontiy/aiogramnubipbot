@@ -19,7 +19,7 @@ class Database:
         
 
     def check_user_in_db(self, user_id):
-        with self.conn as con:
+        with self.con as con:
             cur = con.cursor()
 
             cur.execute(f"SELECT user_id FROM users WHERE user_id='{user_id}'")
