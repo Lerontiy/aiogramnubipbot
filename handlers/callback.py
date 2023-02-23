@@ -314,7 +314,7 @@ async def stud_parse(callback:types.CallbackQuery):
             #group = '107-К' 
 
             studfind_ikm = InlineKeyboardMarkup()
-            studfind_ikm.add(InlineKeyboardButton("« До вибору дня тижня", callback_data=f"studweekday_{group}"))
+            studfind_ikm.add(InlineKeyboardButton("« До днів тижня", callback_data=f"studweekday_{group}"))
 
             await bot.edit_message_reply_markup(
                 chat_id=callback.from_user.id,\
