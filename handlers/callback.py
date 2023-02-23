@@ -83,7 +83,7 @@ async def teach_choose_subj(callback: types.CallbackQuery):
 
         teach_ikm = marcup_get_subjects("teachparse", subjects=subjects, weekday=weekday)
 
-        teach_ikm.add(InlineKeyboardButton("« Назад до вибору дня тижня", callback_data=f"teachweekday_None"))
+        teach_ikm.add(InlineKeyboardButton("« До вибору дня тижня", callback_data=f"teachweekday_None"))
         text = "Оберіть предмет\n/settings - змінити предмети"
 
     try:
@@ -156,7 +156,7 @@ async def teach_parse(callback: types.CallbackQuery):
     for iter, el in enumerate(groups):
         send_text.append(f"{iter+1}. {el}")
     
-    teach_ikm.add(InlineKeyboardButton("« Назад до вибору предмета", callback_data=f"teachchoosesubj_None_{weekday}"))
+    teach_ikm.add(InlineKeyboardButton("« До вибору предмета", callback_data=f"teachchoosesubj_None_{weekday}"))
 
     try:
         await bot.edit_message_text(chat_id=callback.from_user.id,\
@@ -223,7 +223,7 @@ async def stud_department(callback:types.CallbackQuery):
     for department in all_departments:
         acc_ikm.add(InlineKeyboardButton(text=DEPARTMENTS[int(department[0])], callback_data=f"studgroup_{course}_{department[0]}_{acc_action}"))
                 
-    acc_ikm.add(InlineKeyboardButton(text="« Назад до курсів", callback_data=f"studcourse_{acc_action}"))
+    acc_ikm.add(InlineKeyboardButton(text="« До курсів", callback_data=f"studcourse_{acc_action}"))
 
     #try:
     return await bot.edit_message_text(chat_id=callback.from_user.id,\
@@ -263,7 +263,7 @@ async def stud_group(callback: types.CallbackQuery):
         
         acc_ikm.add(InlineKeyboardButton(text=group[0], callback_data=callback_data))
             
-    acc_ikm.add(InlineKeyboardButton(text="« Назад до відділень", callback_data=f"studdep_{course}_{acc_action}"))
+    acc_ikm.add(InlineKeyboardButton(text="« До відділень", callback_data=f"studdep_{course}_{acc_action}"))
 
     try:
         return await bot.edit_message_text(chat_id=callback.from_user.id,\
@@ -290,7 +290,7 @@ async def stud_weekday(callback: types.CallbackQuery | types.Message):
     department = db.get_department_by_group(group)
     course = db.get_course_by_group(group)
 
-    acc_ikm.add(InlineKeyboardButton("« Назад до груп", callback_data=f"studgroup_{course}_{department}"))
+    acc_ikm.add(InlineKeyboardButton("« До груп", callback_data=f"studgroup_{course}_{department}"))
     
     try:
         return await bot.edit_message_text(chat_id=callback.from_user.id,\
@@ -301,18 +301,47 @@ async def stud_weekday(callback: types.CallbackQuery | types.Message):
 
 # парсинг розкладу студенти
 async def stud_parse(callback:types.CallbackQuery):
-    #try:
-    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
-    #        message_id=callback.message.message_id, text="Зачекай...")
-    #except:
-    #    pass
-
     # start_time = time.time()
 
     callback_data = callback.data.split('_')
     
     group = str(callback_data[1])
     weekday = int(callback_data[2])
+
+    try:
+        if callback_data[3]!=None:
+            #weekday = 4
+            #group = '107-К' 
+
+            studfind_ikm = InlineKeyboardMarkup()
+            studfind_ikm.add(InlineKeyboardButton("« До вибору дня тижня", callback_data=f"studweekday_{group}"))
+
+            await bot.edit_message_reply_markup(
+                chat_id=callback.from_user.id,\
+                message_id=callback.message.message_id,
+                reply_markup=studfind_ikm)
+
+            del studfind_ikm
+    except:
+        pass
+
+    #if db.user_is_admin(callback.from_user.id):
+    #    try:
+    #        if callback_data[3]!=None:
+    #            #weekday = 4
+    #            #group = '107-К' 
+#
+    #            studfind_ikm = InlineKeyboardMarkup()
+    #            studfind_ikm.add(InlineKeyboardButton("« До вибору дня тижня", callback_data=f"studweekday_{group}"))
+#
+    #            await bot.edit_message_reply_markup(
+    #                chat_id=callback.from_user.id,\
+    #                message_id=callback.message.message_id,
+    #                reply_markup=studfind_ikm)
+#
+    #            del studfind_ikm
+    #    except:
+    #        pass
 
     dep = db.get_department_by_group(group)
 
@@ -446,17 +475,26 @@ async def stud_parse(callback:types.CallbackQuery):
                 else:
                     send_text.append(f"{iter_les+1}. {el_les} - {aud_text[iter_les]} ауд.")
 
-    studfind_ikm = InlineKeyboardMarkup()
-    studfind_ikm.add(InlineKeyboardButton("« Назад до вибору дня тижня", callback_data=f"studweekday_{group}"))
+    send_text = "\n".join(send_text)
 
+    studfind_ikm = InlineKeyboardMarkup()
+    studfind_ikm.add(\
+                    InlineKeyboardButton("« До днів тижня", callback_data=f"studweekday_{group}"),\
+                    InlineKeyboardButton("Оновити", callback_data=f"studparse_{group}_{weekday}_update"),\
+                    )
+    
+    
     try:
         await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="\n".join(send_text), reply_markup=studfind_ikm, parse_mode="html")
+            message_id=callback.message.message_id, text=send_text, reply_markup=studfind_ikm, parse_mode="html")
     except:
         pass
+
+
+    del num, thtml, el_tr, el_td, iter_td, html, text, studfind_ikm, weekday, group
             
             
-    del num, thtml, el_tr, el_td, iter_td, html, text, studfind_ikm
+    
 # /парсинг розкладу студенти
 
 # /блок для студентів
@@ -479,7 +517,7 @@ async def update_account(callback: types.CallbackQuery):
     acc_ikm = InlineKeyboardMarkup()
     if _type=="0":
         text = "Зміни успішно застосовано"
-        acc_ikm.add(InlineKeyboardButton("« Повернутись до налаштувань", callback_data=f"settings"))
+        acc_ikm.add(InlineKeyboardButton("« До налаштувань", callback_data=f"settings"))
     else:
         text = "<b>[Налаштування]</b> Оберіть один або декілька предметів"
         subjects = db.get_user_subjects(callback.from_user.id)
