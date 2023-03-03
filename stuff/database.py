@@ -55,7 +55,7 @@ class Database:
             sql_cur = sql_con.cursor()
             sql_cur.execute("DELETE FROM users")
 
-                    
+
             for el in all:
                 sql_cur.execute("INSERT INTO users VALUES('{}', '{}', '{}', '{}', '{}')".format(*el))
 
