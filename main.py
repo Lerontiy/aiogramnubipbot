@@ -61,8 +61,6 @@ if __name__ == '__main__':
         )
 
     """ 
-    розкоментувати webhook в функціях on/off_shutdown в main.py
-    розкоментувати перестворення баз даних в функціях on/off_shutdown в main.py
     змінити start_polling() на start_webhook() в main.py
     змінити дійсний API Token в settings.py 
     """
