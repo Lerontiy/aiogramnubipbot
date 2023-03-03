@@ -32,6 +32,16 @@ class Database:
             cur.execute(request)
             con.commit()
             self.con = con
+        self.update_mysql(request)
+        loop.run_until_complete(self.update_mysql(request))
+        return
+    
+
+    async def update_mysql(self, request):
+        async with await self.mysql_connect() as con:
+            async with await con.cursor() as cur:
+                await cur.execute(request)
+            await con.commit()
         return
 
 
