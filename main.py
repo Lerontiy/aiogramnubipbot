@@ -47,7 +47,7 @@ async def on_shutdown(dp):
     pass
 
 
-if __name__ == '__main__':
+async def main():
     print("A")
     loop.create_task(update_weekdays_html())
     start_webhook(
@@ -61,11 +61,6 @@ if __name__ == '__main__':
         loop=loop,
         )
 
-    """ 
-    змінити start_polling() на start_webhook() в main.py
-    змінити дійсний API Token в settings.py 
-    """
-    
     #executor.start_polling(
     #    dispatcher=dp,
     #    skip_updates=False,
@@ -73,6 +68,18 @@ if __name__ == '__main__':
     #    on_startup=on_startup,
     #    on_shutdown=on_shutdown,
     #    )
+    
+    await asyncio.sleep(0)
+
+if __name__ == '__main__':
+    asyncio.run(main())
+
+    """ 
+    змінити start_polling() на start_webhook() в main.py
+    змінити дійсний API Token в settings.py 
+    """
+    
+    
     
 
     
