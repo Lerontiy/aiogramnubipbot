@@ -57,7 +57,7 @@ def main():
         on_shutdown=on_shutdown,
         skip_updates=False,
         host=WEBAPP_HOST,
-        port=WEBAPP_PORT,
+        port=int(os.environ.get('PORT', WEBAPP_PORT)),
         loop=loop,
         )
 

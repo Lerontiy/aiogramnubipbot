@@ -1,2 +1,2 @@
-s = [1, 2, 3]
-print(s[5:7])
+import os
+print("MY_HOME:", os.environ.get('MY_HOME'))
