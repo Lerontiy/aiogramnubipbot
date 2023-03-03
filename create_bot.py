@@ -7,7 +7,7 @@ from stuff.settings import API_TOKEN
 
 storage = MemoryStorage()
 
-loop = asyncio.get_event_loop()
+loop = asyncio.new_event_loop()
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN, loop=loop, parse_mode='html')
