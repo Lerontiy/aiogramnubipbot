@@ -47,8 +47,9 @@ async def on_shutdown(dp):
     pass
 
 
-async def main():
+def main():
     loop.create_task(update_weekdays_html())
+    
     start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,
@@ -68,10 +69,11 @@ async def main():
     #    on_shutdown=on_shutdown,
     #    )
     
-    await asyncio.sleep(0)
+    #await asyncio.sleep(0)
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    #asyncio.run(main())
+    main()
 
     """ 
     змінити start_polling() на start_webhook() в main.py
