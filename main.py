@@ -48,7 +48,6 @@ async def on_shutdown(dp):
 
 
 async def main():
-    print("A")
     loop.create_task(update_weekdays_html())
     start_webhook(
         dispatcher=dp,

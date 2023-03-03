@@ -1,22 +1,25 @@
 from bs4 import BeautifulSoup as BS
 import requests
 import asyncio
+import aiohttp
 
 
 async def update_weekdays_html():
-    for url in my_request.app_url:
-        r = requests.get(url, headers=my_request.headers) # робить запрос до програми, щоб вона не заснула
+    
+    #await asyncio.sleep(0)
+    requests.get(my_request.app_url, headers=my_request.headers) # робить запрос до програми, щоб вона не заснула
     
     l = list()
 
     for url in my_request.url_spreadsheets:
+        
         r = requests.get(url, headers=my_request.headers)
         l.append(BS(r.content, 'html.parser'))
 
     my_request.weekdays_html = l
     
     del l, r, url
-
+    print("update")
     await asyncio.sleep(60*5)
     await update_weekdays_html()
 
@@ -33,9 +36,7 @@ class Request:
             "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwv0DHzrT97qJvh7lBovx6BubKJIO_gk_Lesgyn22RlxMclC3z1OW6TKJDhFe1CBJ6fGDSUcciZXzX/pubhtml",
             "https://docs.google.com/spreadsheets/d/e/2PACX-1vScVScHS0fxSDzdeJwVFgTXo0mSfgZ-Z65KzCLc1bcsX-73tI4UW4Fie8CMpCMVdTD34JNNoM0-oN-7/pubhtml",
         ]
-        self.app_url = [
-            "https://aiogramnubipbot.herokuapp.com/"
-        ]
+        self.app_url = "https://aiogramnubipbot.herokuapp.com/"
 
 
     def get_weekday_html(self, weekday):    
