@@ -1,45 +1,52 @@
 from aiogram import  Dispatcher, types
-from aiogram.dispatcher.filters import Text
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from create_bot import bot
-from stuff.settings import DEPARTMENTS, WEEKDAYS, SKIP_TR, SUBJECTS
+from stuff.settings import DEPARTMENTS, SKIP_TR, SUBJECTS
 from stuff.database import db
 from stuff.marcups import *
 from stuff.my_requests import my_request
+from stuff.messages import MESSAGES
+import stuff.callback_data as cb_data
+
+import stuff.functions as functions
 
 from bs4 import BeautifulSoup as BS
 
 
 # блок, коли немає акаунту і треба визначитись з класом (викладач(-ка), студент(-ка))
-async def htoya(callback: types.CallbackQuery):
-    #try:
-    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
-    #        message_id=callback.message.message_id, text="Зачекай...")
-    #except:
-    #    pass
-        
+async def htoya(callback: types.CallbackQuery, callback_data: dict):
     try:
-        acc_action = callback.data.split('_')[1]
+        acc_action = callback_data['acc_action']
     except:
         acc_action = "None"
 
-
-    acc_ikm = InlineKeyboardMarkup()
-
-    acc_ikm.add(InlineKeyboardButton("Я студент(-ка)", callback_data=f"studcourse_{acc_action}"))
-    acc_ikm.add(InlineKeyboardButton("Я викладач(-ка)", callback_data=f"teachweekday_{acc_action}"))
+    acc_ikm = InlineKeyboardMarkup(row_width=1)
 
     if acc_action=="None":
-        text = "«Хто я?»"
+        clback_data = cb_data.teachweekday.new(page='0')
     else:
-        text = "<b>[Налаштування]</b> «Хто я?»"
+        clback_data = cb_data.teachchoosesubj.new(acc_action=acc_action, weekday='None', page='0')
+
+    acc_ikm.add(InlineKeyboardButton(MESSAGES["IM_STUDENT"], callback_data=cb_data.studcourse.new(acc_action=acc_action)),\
+                InlineKeyboardButton(MESSAGES["IM_TEACHER"], callback_data=clback_data))
+
+
+    if acc_action=="None":
+        text = MESSAGES["CHOOSE_WHO_ARE_YOU"]+"\n/settings"
+    else:
+        text = "<b>[Налаштування]</b> "+MESSAGES["CHOOSE_WHO_ARE_YOU"]
+        acc_ikm.add(InlineKeyboardButton(MESSAGES["BACK_TO_SETTINGS"], callback_data=cb_data.settings.new()))
+        
 
     try:
         await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm, parse_mode='html')
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
     except:
         pass
+    
+    del acc_action, acc_ikm, clback_data, text
+
 # /блок, коли немає акаунту і треба визначитись з класом (викладач(-ка), студент(-ка))
 
 
@@ -47,66 +54,98 @@ async def htoya(callback: types.CallbackQuery):
 # блок для викладачів/викладачок
 
 # день тижня
-async def teach_weekday(callback: types.CallbackQuery):
-    callback_data = callback.data.split('_')
+async def teach_weekday(callback: types.CallbackQuery, callback_data:dict):
+    page = callback_data['page']
 
-    acc_action = callback_data[1]
+    teach_ikm = marcup_get_weekdays(prefix="teachchoosesubj", page=page)
 
-    teach_ikm = InlineKeyboardMarkup()
-    teach_ikm = marcup_get_weekdays("teachchoosesubj", acc_action)
-
-    teach_ikm.add(InlineKeyboardButton("« Назад", callback_data=f"htoya_{acc_action}"))
+    teach_ikm.row(InlineKeyboardButton(MESSAGES["BACK"], callback_data=cb_data.htoya.new(acc_action='None')))
 
     try:
         await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Оберіть потрібний день тижня:", reply_markup=teach_ikm)
+            message_id=callback.message.message_id, text=MESSAGES["CHOOSE_WEEKDAY"], reply_markup=teach_ikm)
     except:
         pass
+
+    del teach_ikm
 # /день тижня
 
 # вибір предмета
-async def teach_choose_subj(callback: types.CallbackQuery):
-    callback_data = callback.data.split('_')
-
-    acc_action = callback_data[1]
-    
-    teach_ikm = InlineKeyboardMarkup()
-    subjects = db.get_user_subjects(callback.from_user.id)
-
-    if (subjects=="") or (acc_action!="None"):
-        teach_ikm = marcup_get_all_subjects("teachparse", acc_action=acc_action, subjects=subjects)
-
-        text = "<b>[Налаштування]</b> Оберіть один або декілька предметів"
-
-    else:
-        weekday = int(callback_data[2])
-
-        teach_ikm = marcup_get_subjects("teachparse", subjects=subjects, weekday=weekday)
-
-        teach_ikm.add(InlineKeyboardButton("« До вибору дня тижня", callback_data=f"teachweekday_None"))
-        text = "Оберіть предмет\n/settings - змінити предмети"
+async def teach_choose_subj(callback: types.CallbackQuery, callback_data:dict):
+    acc_action = callback_data['acc_action']
+    page = callback_data['page']
 
     try:
-        return await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=text, reply_markup=teach_ikm, parse_mode='html')
+        weekday = callback_data['weekday']
+    except:
+        weekday="None"
+
+    text = MESSAGES["CHOOSE_SUBJECT(S)"]%(":") # else теж використовує цю змінну
+    subjects = db.get_user_subjects(callback.from_user.id)
+    
+    if acc_action=='None':
+        if subjects=='':
+            callback_text = "teachparse"
+            teach_ikm = marcup_get_all_subjects(prefix=callback_text, acc_action=acc_action, subjects=subjects, weekday=weekday, page=page)
+        else:
+            teach_ikm = marcup_get_subjects(subjects=subjects, weekday=weekday, page=page)
+    else:
+        text = "<b>[Налаштування]</b> "+MESSAGES["CHOOSE_SUBJECT(S)"]%("(и). Предмет збережено, якщо біля нього є марка.")
+        callback_text = "updateacc"
+
+        teach_ikm = marcup_get_all_subjects(prefix=callback_text, acc_action=acc_action, subjects=subjects, weekday=weekday, page=page)
+
+
+    #subjects = db.get_user_subjects(callback.from_user.id)
+#
+    #text = MESSAGES["CHOOSE_SUBJECT(S)"]%(":") # else теж використовує цю змінну
+    #if (subjects=="") or (acc_action!="None"):
+    #    if acc_action=="None":
+    #        callback_text = "teachparse"
+    #    else:
+    #        text = "<b>[Налаштування]</b> "+MESSAGES["CHOOSE_SUBJECT(S)"]%("(и). Предмет збережено, якщо біля нього є марка.")
+    #        callback_text = "updateacc"
+    #    
+    #    teach_ikm = marcup_get_all_subjects(prefix=callback_text, acc_action=acc_action, subjects=subjects, weekday=weekday, page=page)
+    #    
+    #else:
+    #    teach_ikm = marcup_get_subjects(subjects=subjects, weekday=weekday, page=page)
+    #
+    try:
+        await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=text, reply_markup=teach_ikm)
     except:
         pass
 # /вибір предмета
 
 # парсинг розкладу викладачі
-async def teach_parse(callback: types.CallbackQuery):
-    callback_data = callback.data.split('_')
+async def teach_parse(callback: types.CallbackQuery, callback_data:dict):
+    subj_id = callback_data['subj_id']
+    weekday = int(callback_data['weekday'])
+    page = callback_data['page']
 
-    weekday = int(callback_data[1])
-    subj = callback_data[2]
 
-    teach_ikm = InlineKeyboardMarkup()
+    try:
+        if callback_data['update']!='None':
+            teach_ikm = InlineKeyboardMarkup(row_width=2)
+            teach_ikm.row(InlineKeyboardButton(MESSAGES["BACK_TO_SUBJECT(S)"], callback_data=cb_data.teachchoosesubj.new(acc_action='None', weekday=weekday, page=page)))
+
+            await bot.edit_message_reply_markup(
+                chat_id=callback.from_user.id,\
+                message_id=callback.message.message_id,
+                reply_markup=teach_ikm)
+            del teach_ikm
+    except:
+        pass
+
+
+    teach_ikm = InlineKeyboardMarkup(row_width=2)
 
     html = my_request.get_weekday_html(weekday)
 
     groups = [[], [], [], [], []]
     regime = None
-    subj = SUBJECTS[subj]
+    subj = SUBJECTS[subj_id]
     day_p_mon = ""
 
     for div in html.select("#sheets-viewport > div"):
@@ -137,8 +176,14 @@ async def teach_parse(callback: types.CallbackQuery):
                         continue
                     elif (regime=="check_subj"):
                         try:
-                            if (subj in el_td.text) or (("Захист України" in el_td.text) and (subj[-3:-1] in el_td.text)):
-                                groups[subj_count].append(all_groups[iter_td-1])
+                            if functions.in_both_str(subj, el_td.text, string="Захист") and functions.in_both_str(subj, el_td.text, string=subj[-2:-1]) \
+                                or functions.in_both_str(subj, el_td.text, string="Історія") \
+                                or functions.equal_strings_in_something(subj, el_td.text) \
+                                or functions.in_both_str(subj, el_td.text, string="Психологія", excepting_string="етика") \
+                                or functions.in_both_str(subj, el_td.text, string="Іноземна мова", excepting_string="спрям") \
+                                or functions.in_both_str(subj, el_td.text, string="Українська мова", excepting_string="спрям") \
+                                or ((subj in el_td.text) and (subj not in ["Іноземна мова", "Психологія", "Українська мова"])):
+                                    groups[subj_count].append(all_groups[iter_td-1])
                         except:
                             pass
 
@@ -156,7 +201,10 @@ async def teach_parse(callback: types.CallbackQuery):
     for iter, el in enumerate(groups):
         send_text.append(f"{iter+1}. {el}")
     
-    teach_ikm.add(InlineKeyboardButton("« До вибору предмета", callback_data=f"teachchoosesubj_None_{weekday}"))
+    teach_ikm.row(\
+        InlineKeyboardButton(MESSAGES["BACK_TO_SUBJECT(S)"], callback_data=cb_data.teachchoosesubj.new(acc_action='None', weekday=weekday, page=page)),\
+        InlineKeyboardButton(MESSAGES["UPDATE"], callback_data=cb_data.teachparse.new(subj_id=subj_id, weekday=weekday, update='update', page=page))
+        )
 
     try:
         await bot.edit_message_text(chat_id=callback.from_user.id,\
@@ -164,7 +212,8 @@ async def teach_parse(callback: types.CallbackQuery):
     except:
         pass
 
-    del send_text, regime, groups, all_groups, subj_count, subj, div, iter_tr, el_tr, iter_td, el_td, html, thtml, dhtml, day_p_mon
+    del subj_id, weekday, teach_ikm, html, groups, regime, subj, day_p_mon, div, dhtml, iter_tr, el_tr, thtml, iter_td, el_td, all_groups
+
     return
 # /парсинг розкладу викладачі
 
@@ -175,146 +224,128 @@ async def teach_parse(callback: types.CallbackQuery):
 # блок для студентів          
 
 # курс
-async def stud_course(callback: types.CallbackQuery):
-    #await asyncio.sleep(0)
-    #try:
-    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
-    #        message_id=callback.message.message_id, text="Зачекай...")
-    #except:
-    #    pass
-
+async def stud_course(callback: types.CallbackQuery, callback_data:dict):
     try:
-        callback_data = callback.data.split('_')
-        acc_action = callback_data[1]
+        acc_action = callback_data['acc_action']
     except:
         acc_action = 'None'
 
-    acc_ikm = InlineKeyboardMarkup()
+    if acc_action=='None':
+        text = MESSAGES["CHOOSE_COURSE"]
+    else:
+        text = "<b>[Налаштування]</b> "+MESSAGES["CHOOSE_COURSE"]
 
-    acc_ikm.add(InlineKeyboardButton(text="1 курс", callback_data=f"studdep_1_{acc_action}"), InlineKeyboardButton(text="2 курс", callback_data=f"studdep_2_{acc_action}"))
-    acc_ikm.add(InlineKeyboardButton(text="3 курс", callback_data=f"studdep_3_{acc_action}"), InlineKeyboardButton(text="4 курс", callback_data=f"studdep_4_{acc_action}"))
+    acc_ikm = InlineKeyboardMarkup(row_width=2)
+    
+    
+    ikm_list = (InlineKeyboardButton(text=f"{iter} курс", callback_data=cb_data.studdep.new(course=iter, acc_action=acc_action)) for iter in range(1,5))
+    acc_ikm.add(*ikm_list)
 
-    #acc_ikm.add(InlineKeyboardButton("« Назад", callback_data="htoya"))
+    acc_ikm.row(InlineKeyboardButton(MESSAGES["BACK"], callback_data=cb_data.htoya.new(acc_action=acc_action)))
+    
     try:
         await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Обери свій курс:", reply_markup=acc_ikm)
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
     except:
         pass
+
+    del acc_action, text, acc_ikm, ikm_list
 # /курс
 
 # відділення студенти
-async def stud_department(callback:types.CallbackQuery):
-    #await asyncio.sleep(0)
+async def stud_department(callback:types.CallbackQuery, callback_data:dict):
+    course = callback_data['course']
+    acc_action = callback_data['acc_action']
 
-    #try:
-    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
-    #        message_id=callback.message.message_id, text="Зачекай...")
-    #except:
-    #    pass
-    
-    callback_data = callback.data.split('_')
-    course = callback_data[1]
-    acc_action = callback_data[2]
+    if acc_action=='None':
+        text = MESSAGES["CHOOSE_DEPARTMENT"]
+    else:
+        text = "<b>[Налаштування]</b> "+MESSAGES["CHOOSE_DEPARTMENT"]
     
     all_departments = db.get_all_departments_by_course(course)
     
-    acc_ikm = InlineKeyboardMarkup()
+    acc_ikm = InlineKeyboardMarkup(row_width=1)
 
-    for department in all_departments:
-        acc_ikm.add(InlineKeyboardButton(text=DEPARTMENTS[int(department[0])], callback_data=f"studgroup_{course}_{department[0]}_{acc_action}"))
+    for department in all_departments: 
+        acc_ikm.add(InlineKeyboardButton(text=DEPARTMENTS[int(department[0])], callback_data=cb_data.studgroup.new(course=course, department=department[0], acc_action=acc_action)))
                 
-    acc_ikm.add(InlineKeyboardButton(text="« До курсів", callback_data=f"studcourse_{acc_action}"))
+    acc_ikm.row(InlineKeyboardButton(text=MESSAGES["BACK_TO_COURSES"], callback_data=cb_data.studcourse.new(acc_action)))
 
-    #try:
-    return await bot.edit_message_text(chat_id=callback.from_user.id,\
-        message_id=callback.message.message_id, text="Обери своє відділення:", reply_markup=acc_ikm)
-    #except:
-    #    pass
+    try:
+        await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+    except:
+        pass
 # /відділення студенти
 
 # група студенти
-async def stud_group(callback: types.CallbackQuery):
-    #await asyncio.sleep(0)
-    
-    #try:
-    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
-    #        message_id=callback.message.message_id, text="Зачекай...")
-    #except:
-    #    pass
-
-    callback_data = callback.data.split('_')
-
-    course = callback_data[1]
-    department = callback_data[2]
+async def stud_group(callback: types.CallbackQuery, callback_data:dict):
+    course = callback_data['course']
+    department = callback_data['department']
     try:
-        acc_action = callback_data[3]
+        acc_action = callback_data['acc_action']
     except:
         acc_action = 'None'
+
+    if acc_action=='None':
+        text = MESSAGES['CHOOSE_GROUP']
+    else:
+        text = "<b>[Налаштування]</b> "+MESSAGES['CHOOSE_GROUP']
     
     all_groups = db.get_all_groups_by_dep_and_cour(department, course)
 
-    acc_ikm = InlineKeyboardMarkup()
+    acc_ikm = InlineKeyboardMarkup(row_width=1)
 
     for group in all_groups:
         if acc_action=='None':
-            callback_data = f"studweekday_{group[0]}"
+            clback_data = cb_data.studweekday.new(group=group[0])
         else:
-            callback_data = f"updateacc_0_{group[0]}"
+            clback_data = cb_data.updateacc.new(_type='0', addition=group[0], page='0')
         
-        acc_ikm.add(InlineKeyboardButton(text=group[0], callback_data=callback_data))
+        acc_ikm.add(InlineKeyboardButton(text=group[0], callback_data=clback_data))
             
-    acc_ikm.add(InlineKeyboardButton(text="« До відділень", callback_data=f"studdep_{course}_{acc_action}"))
+    acc_ikm.row(InlineKeyboardButton(text=MESSAGES["BACK_TO_DEPARTMENTS"], callback_data=cb_data.studdep.new(course=course, acc_action=acc_action)))
 
     try:
-        return await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Обери свою групу:", reply_markup=acc_ikm)
+        await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
     except:
         pass
 # /група студенти
 
 # день тижня студенти
-async def stud_weekday(callback: types.CallbackQuery | types.Message):
-    #try:
-    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
-    #        message_id=callback.message.message_id, text="Зачекай...")
-    #except:
-    #    pass
+async def stud_weekday(callback: types.CallbackQuery | types.Message, callback_data:dict):
+    group = str(callback_data['group'])
 
-
-    callback_data = callback.data.split('_')
-
-    group = str(callback_data[1])
-
-    acc_ikm = marcup_get_weekdays("studparse", group)
+    acc_ikm = marcup_get_weekdays(prefix="studparse", group=group)
 
     department = db.get_department_by_group(group)
     course = db.get_course_by_group(group)
 
-    acc_ikm.add(InlineKeyboardButton("« До груп", callback_data=f"studgroup_{course}_{department}"))
+    acc_ikm.row(InlineKeyboardButton(MESSAGES["BACK_TO_GROUPS"], callback_data=cb_data.studgroup.new(course=course, department=department, acc_action='None')))
     
     try:
-        return await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="Обери потрібний день тижня:", reply_markup=acc_ikm)
+        await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=MESSAGES["CHOOSE_WEEKDAY"], reply_markup=acc_ikm)
     except:
         pass
+
+    del group, acc_ikm, department, course
 # /день тижня студенти
 
 # парсинг розкладу студенти
-async def stud_parse(callback:types.CallbackQuery):
+async def stud_parse(callback:types.CallbackQuery, callback_data:dict):    
     # start_time = time.time()
-
-    callback_data = callback.data.split('_')
-    
-    group = str(callback_data[1])
-    weekday = int(callback_data[2])
+    group = str(callback_data['group'])
+    weekday = int(callback_data['weekday'])
 
     try:
-        if callback_data[3]!=None:
+        if callback_data['update']!="None":
             #weekday = 4
             #group = '107-К' 
 
             studfind_ikm = InlineKeyboardMarkup()
-            studfind_ikm.add(InlineKeyboardButton("« До днів тижня", callback_data=f"studweekday_{group}"))
+            studfind_ikm.add(InlineKeyboardButton(MESSAGES["BACK_TO_WEEKDAYS"], callback_data=cb_data.studweekday.new(group=group)))
 
             await bot.edit_message_reply_markup(
                 chat_id=callback.from_user.id,\
@@ -325,26 +356,7 @@ async def stud_parse(callback:types.CallbackQuery):
     except:
         pass
 
-    #if db.user_is_admin(callback.from_user.id):
-    #    try:
-    #        if callback_data[3]!=None:
-    #            #weekday = 4
-    #            #group = '107-К' 
-#
-    #            studfind_ikm = InlineKeyboardMarkup()
-    #            studfind_ikm.add(InlineKeyboardButton("« До вибору дня тижня", callback_data=f"studweekday_{group}"))
-#
-    #            await bot.edit_message_reply_markup(
-    #                chat_id=callback.from_user.id,\
-    #                message_id=callback.message.message_id,
-    #                reply_markup=studfind_ikm)
-#
-    #            del studfind_ikm
-    #    except:
-    #        pass
-
     dep = db.get_department_by_group(group)
-
 
     html = my_request.get_weekday_html(weekday)
 
@@ -372,7 +384,7 @@ async def stud_parse(callback:types.CallbackQuery):
     for iter_tr,el_tr in enumerate(html.select("tbody > tr")):
         thtml = BS(str(el_tr), 'html.parser')
         for iter_td,el_td in enumerate(thtml.select("td")):
-            if (iter_td==0) and (group in el_td.text):
+            if (iter_td==0) and (group[:3] in el_td.text) and (iter_tr>2):
                 if (group[:3]=="303") or (group[:3]=="305"):
                     if (group[-1]==el_td.text[-1]):
                         can_write = True
@@ -418,13 +430,13 @@ async def stud_parse(callback:types.CallbackQuery):
                             data = [data[1], data[2]]
                             day_p_mon = " ".join(data)
                             del data
-                elif (num == iter_td) and (len(text) < 5):
+                elif (num==iter_td) and (len(text) < 5):
                     if (el_td.text=="-"):
                         text.append("")
                     else:
                         text.append(el_td.text)
                     k = False
-                    if (len(text) == 5):
+                    if (len(text)==5):
                         can_stop = True
                         break
                     else:
@@ -438,8 +450,8 @@ async def stud_parse(callback:types.CallbackQuery):
                     m = el_td.text
                     k = True
                 try:
-                    if (group[:3]==(el_td.text)[:3]):
-                        if (group[:3]=="303") or (group[:3]=="305"):
+                    if (group[:3] in el_td.text) and (iter_tr>2):
+                        if (group[:3] in ["303", "305"]):
                             if (group[-1]==el_td.text[-1]):
                                 num = iter_td
                                 break
@@ -479,8 +491,8 @@ async def stud_parse(callback:types.CallbackQuery):
 
     studfind_ikm = InlineKeyboardMarkup()
     studfind_ikm.add(\
-                    InlineKeyboardButton("« До днів тижня", callback_data=f"studweekday_{group}"),\
-                    InlineKeyboardButton("Оновити", callback_data=f"studparse_{group}_{weekday}_update"),\
+                    InlineKeyboardButton(MESSAGES["BACK_TO_WEEKDAYS"], callback_data=cb_data.studweekday.new(group=group)),\
+                    InlineKeyboardButton(MESSAGES["UPDATE"], callback_data=cb_data.studparse.new(group=group, update='update', weekday=weekday)),\
                     )
     
     
@@ -493,40 +505,31 @@ async def stud_parse(callback:types.CallbackQuery):
 
     del num, thtml, el_tr, el_td, iter_td, html, text, studfind_ikm, weekday, group
             
-            
-    
 # /парсинг розкладу студенти
-
 # /блок для студентів
 
 
 
 # робота з акаунтом
-async def update_account(callback: types.CallbackQuery):
-    #try:
-    #    await bot.edit_message_text(chat_id=callback.from_user.id,\
-    #        message_id=callback.message.message_id, text="Зачекай...")
-    #except:
-    #    pass
+async def update_account(callback: types.CallbackQuery, callback_data:dict):
+    _type = callback_data['_type']
+    page = callback_data['page']
 
-    callback_data = callback.data.split('_')
-
-    _type = callback_data[1]
-    db.update_account(callback_data[2], user_id=callback.from_user.id, _type=_type)
+    db.update_account(addition=callback_data['addition'], user_id=callback.from_user.id, _type=_type)
 
     acc_ikm = InlineKeyboardMarkup()
     if _type=="0":
-        text = "Зміни успішно застосовано"
-        acc_ikm.add(InlineKeyboardButton("« До налаштувань", callback_data=f"settings"))
+        text = MESSAGES["CHANGES_APPLIED"]
+        acc_ikm.add(InlineKeyboardButton(MESSAGES["BACK_TO_SETTINGS"], callback_data=cb_data.settings.new()))
     else:
-        text = "<b>[Налаштування]</b> Оберіть один або декілька предметів"
+        text = "<b>[Налаштування]</b> "+MESSAGES["CHOOSE_SUBJECT(S)"]%("(и). Предмет збережено, якщо біля нього є марка.")
         subjects = db.get_user_subjects(callback.from_user.id)
-        acc_ikm = marcup_get_all_subjects(acc_action="1", subjects=subjects)
+        acc_ikm = marcup_get_all_subjects(prefix='updateacc', acc_action="1", subjects=subjects, page=page)
             
     
     try:
         await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm, parse_mode='html')
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
     except:
         pass
 
@@ -537,19 +540,19 @@ async def update_account(callback: types.CallbackQuery):
 
 
 def my_register_callback_query_handler(dp: Dispatcher):
-    dp.register_callback_query_handler(htoya, Text(startswith='htoya'))
+    dp.register_callback_query_handler(htoya, cb_data.htoya.filter())
 
-    #dp.register_callback_query_handler(teachinfo, Text(startswith='teachinfo'))
+    #dp.register_callback_query_handler(teachinfo, cb_data.teachinfo.filter())
 
-    dp.register_callback_query_handler(teach_weekday, Text(startswith='teachweekday'))
-    dp.register_callback_query_handler(teach_choose_subj, Text(startswith='teachchoosesubj'))
-    dp.register_callback_query_handler(teach_parse, Text(startswith='teachparse'))
+    dp.register_callback_query_handler(teach_weekday, cb_data.teachweekday.filter())
+    dp.register_callback_query_handler(teach_choose_subj, cb_data.teachchoosesubj.filter())
+    dp.register_callback_query_handler(teach_parse, cb_data.teachparse.filter())
 
-    dp.register_callback_query_handler(stud_course, Text(startswith='studcourse'))
-    dp.register_callback_query_handler(stud_department, Text(startswith='studdep'))
-    dp.register_callback_query_handler(stud_group, Text(startswith='studgroup'))
-    dp.register_callback_query_handler(stud_weekday, Text(startswith='studweekday'))
-    dp.register_callback_query_handler(stud_parse, Text(startswith='studparse'))
+    dp.register_callback_query_handler(stud_course, cb_data.studcourse.filter())
+    dp.register_callback_query_handler(stud_department, cb_data.studdep.filter())
+    dp.register_callback_query_handler(stud_group, cb_data.studgroup.filter())
+    dp.register_callback_query_handler(stud_weekday, cb_data.studweekday.filter())
+    dp.register_callback_query_handler(stud_parse, cb_data.studparse.filter())
 
-    dp.register_callback_query_handler(update_account, Text(startswith='updateacc'))
+    dp.register_callback_query_handler(update_account, cb_data.updateacc.filter())
     

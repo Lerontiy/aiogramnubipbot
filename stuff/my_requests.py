@@ -1,20 +1,12 @@
 from bs4 import BeautifulSoup as BS
-import threading
 import requests
+import asyncio
 
 
-def update_weekdays_html():
-    #url = 'https://iek.irpin.com/for-students/rozklad-zm%D1%96n.html'        
-    #r = requests.get(url, headers=my_request.headers)
-    #html = BS(r.content, 'html.parser')
-    #l = list()
-    #
-    #for el in html.select(".content > .row > p"):        
-    #    title = el.select("a")
-    #    url = title[0].get('href')
-    #    r = requests.get(url, headers=my_request.headers)
-    #    l.append(BS(r.content, 'html.parser'))
-
+async def update_weekdays_html():
+    for url in my_request.app_url:
+        r = requests.get(url, headers=my_request.headers) # робить запрос до програми, щоб вона не заснула
+    
     l = list()
 
     for url in my_request.url_spreadsheets:
@@ -22,10 +14,11 @@ def update_weekdays_html():
         l.append(BS(r.content, 'html.parser'))
 
     my_request.weekdays_html = l
-    #del el, title, url, r, l
+    
     del l, r, url
 
-    threading.Timer(60*5, update_weekdays_html).start()
+    await asyncio.sleep(60*5)
+    await update_weekdays_html()
 
 
 class Request:
@@ -39,6 +32,9 @@ class Request:
             "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDA31eofItYZ5nQWwfvF26yq8Snig-oGbtdisOuAm2Ur0-v1h-Qwdmh3-eT3nQGRKW1e7D7KQ2UjUq/pubhtml",
             "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwv0DHzrT97qJvh7lBovx6BubKJIO_gk_Lesgyn22RlxMclC3z1OW6TKJDhFe1CBJ6fGDSUcciZXzX/pubhtml",
             "https://docs.google.com/spreadsheets/d/e/2PACX-1vScVScHS0fxSDzdeJwVFgTXo0mSfgZ-Z65KzCLc1bcsX-73tI4UW4Fie8CMpCMVdTD34JNNoM0-oN-7/pubhtml",
+        ]
+        self.app_url = [
+            "https://aiogramnubipbot.herokuapp.com/"
         ]
 
 

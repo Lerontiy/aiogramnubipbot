@@ -5,29 +5,30 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 from create_bot import bot
-from stuff.settings import FSM_ikm, MESSAGES
+from stuff.settings import FSM_ikm
+from stuff.messages import MESSAGES
 from stuff.database import db
 
 
 # /admin
 async def admin(message: types.Message):
-    if (message.chat.id==int("-1001829277626")) and (message.from_user.id==int("706030949")):
+    if (message.chat.id==int("-1001829277626")) and db.user_is_admin(message.from_user.id):
         db.check_user_in_db(message.reply_to_message.from_user.id)
         db.change_acctype(message.reply_to_message.from_user.id, '1')
         
-        await message.reply_to_message.reply(f"Ти успішно стаєш адміністратором!\nId: {message.reply_to_message.from_user.id}")
-        await bot.send_message(message.reply_to_message.from_user.id, text="Ти успішно стаєш адміністратором!", reply_markup=FSM_ikm)
+        await message.reply_to_message.reply(MESSAGES['YOU_BECOME_AN_ADMIN']+f"\nId: {message.reply_to_message.from_user.id}")
+        await bot.send_message(message.reply_to_message.from_user.id, text=MESSAGES['YOU_BECOME_AN_ADMIN'], reply_markup=FSM_ikm)
 
 
 # /noadmin
 async def noadmin(message: types.Message):
-    if (message.chat.id==int("-1001829277626")) and (message.from_user.id==int("706030949")):
+    if (message.chat.id==int("-1001829277626")) and db.user_is_admin(message.from_user.id):
         db.check_user_in_db(message.reply_to_message.from_user.id)
         db.change_acctype(message.reply_to_message.from_user.id, '0')
         
         adm_ikm = ReplyKeyboardRemove()
-        await message.reply_to_message.reply(f"Нажаль, ти більше не адміністратор!\nId: {message.reply_to_message.from_user.id}")
-        await bot.send_message(message.reply_to_message.from_user.id, text="Нажаль, ти більше не адміністратор!", reply_markup=adm_ikm)
+        await message.reply_to_message.reply(MESSAGES['YOU_ARE_NOT_AN_ADMIN']+f"\nId: {message.reply_to_message.from_user.id}")
+        await bot.send_message(message.reply_to_message.from_user.id, text=MESSAGES['YOU_ARE_NOT_AN_ADMIN'], reply_markup=adm_ikm)
 
 
 class Advertisment(StatesGroup):
@@ -75,6 +76,7 @@ async def FSMsend(message: types.Message, state: FSMContext):
                 print(f'Відправлено до {user_id[0]}')
             except:
                 db.delete_user(user_id[0])
+                print(f'{user_id[0]} видалено.')
 
         await state.finish()
 
@@ -83,7 +85,7 @@ async def FSMsend(message: types.Message, state: FSMContext):
         await state.finish()
 
     else:
-        await message.answer("Треба відповісти так або ні!")
+        await message.answer("Ви маєте відповісти «Так» або «Ні»!")
         await Advertisment.send_or_not.set()
 
 

@@ -1,105 +1,130 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from stuff.settings import WEEKDAYS, SUBJECTS
+from stuff.messages import MESSAGES
+import stuff.callback_data as cb_data
 
-from datetime import date
+import datetime
 
-
-def marcup_get_all_subjects(*args, acc_action, subjects):
-    text = str()
-    for el in args:
-        text += f"{el}_"
-
-    teach_ikm = InlineKeyboardMarkup()
-
-    buffer = []
-    for subj_id in SUBJECTS:
-        buffer.append(subj_id)
-        if (len(buffer)==2):
-            help = help_def(acc_action, buffer, subjects, text)
-            addition = help[0]
-
-            
-            callback_buffer = help[1]
-
-            teach_ikm.add(InlineKeyboardButton(f"{addition[0]}{SUBJECTS[buffer[0]]}", callback_data=callback_buffer[0]),\
-                        InlineKeyboardButton(f"{addition[1]}{SUBJECTS[buffer[1]]}", callback_data=callback_buffer[1]))
-            buffer.clear()
-
-    if (len(buffer)==1):
-        help = help_def(acc_action, buffer, subjects, text)
-        addition = help[0]
-        callback_buffer = help[1]
-
-        teach_ikm.add(\
-            InlineKeyboardButton("« Назад", callback_data=f"htoya_{acc_action}"),\
-            InlineKeyboardButton(f"{addition[0]}{SUBJECTS[buffer[0]]}", callback_data=callback_buffer[0]))
-    else:
-        teach_ikm.add(InlineKeyboardButton("« Назад", callback_data=f"htoya_{acc_action}"))
-
-    del buffer, text
-    return teach_ikm
-
-# допоміжна функція до тої, що зверху
-def help_def(acc_action, buffer, subjects, text):
-    addition_list = ["", ""]
-    callback_buffer = []
-
-    if acc_action=="None":
-        for i in range(2):
-            callback_buffer.append(f"{text}{buffer[i]}")
-    else:
-        for iter, sub_id in enumerate(buffer):
-            
-            if sub_id in subjects.split("-"):
-                addition_list[iter] = "☑️ "
-            
-            callback_buffer.append(f"updateacc_1_{sub_id}")
+def marcup_get_all_subjects(prefix:str, acc_action:str, subjects:str, page='0', weekday='None'):
+    teach_ikm = InlineKeyboardMarkup(row_width=2)
+    subjects = subjects.split('-')
     
-    return (addition_list, callback_buffer)
+    ikm_list = list()
+    page_switch_list = list()
+    
+    page = int(page)
+    cut = page*10
+    for id in list(SUBJECTS)[cut:cut+10]:
+        name = SUBJECTS[id]
+
+        if prefix=='teachparse':
+            ikm_list.append((name, cb_data.teachparse.new(subj_id=id, weekday=weekday, update='None', page=str(page))))
+
+        elif prefix=='updateacc':
+            if id in subjects:
+                _name = '☑️ '+name
+            else:
+                _name = name
+            ikm_list.append((_name, cb_data.updateacc.new(_type='1', addition=id, page=page)))
+
+            del _name
+
+
+        if page!=0 and len(page_switch_list)==0:
+            page_switch_list.append(('«', cb_data.teachchoosesubj.new(acc_action=acc_action, weekday=weekday, page=page-1)))
+
+    try:
+        if list(SUBJECTS)[cut+10]:
+            page_switch_list.append(('»', cb_data.teachchoosesubj.new(acc_action=acc_action, weekday=weekday, page=page+1)))
+    except:
+        pass
+
+
+    if acc_action!="None":
+        back_text = MESSAGES["BACK_TO_SETTINGS"]
+        back_callback_text = cb_data.settings.new()
+    else:
+        back_text = MESSAGES["BACK_TO_WEEKDAYS"]
+        back_callback_text = cb_data.teachweekday.new(page=page)
+
+    ikm_list = (InlineKeyboardButton(text=name, callback_data=callback_data) for name, callback_data in ikm_list)
+    teach_ikm.add(*ikm_list)
+
+    page_switch_list = (InlineKeyboardButton(text=name, callback_data=callback_data) for name, callback_data in page_switch_list)
+    teach_ikm.row(*page_switch_list)
+
+    teach_ikm.row(InlineKeyboardButton(text=back_text, callback_data=back_callback_text))
+
+    del subjects, ikm_list, id, name, back_text, back_callback_text
+
+    return teach_ikm
 
 
 # дні тижня
-def marcup_get_weekdays(*args):
-    text = str()
-    for el in args:
-        text += f"{el}_"
+def marcup_get_weekdays(prefix:str, page:str='0', **addition:str):
+    acc_ikm = InlineKeyboardMarkup(row_width=2)
+    
+    page = int(page)
+    ikm_list = list()
 
-    acc_ikm = InlineKeyboardMarkup()
-
-    buffer = []
     for iter, i in enumerate(WEEKDAYS):
-        if date.weekday(date.today()) == iter:
-            c = f"{i} - сьогодні"
+        if (datetime.datetime.today() - datetime.timedelta(hours=0)).weekday()==iter:
+            weekday_name = f"{i} - сьогодні"
         else:
-            c = f"{i}"
-        buffer.append(c)
-        if (len(buffer)==2):
-            acc_ikm.add(InlineKeyboardButton(buffer[0], callback_data=f"{text}{iter-1}"),\
-                        InlineKeyboardButton(buffer[1], callback_data=f"{text}{iter}"))
-            buffer.clear()
-    del buffer, text
+            weekday_name = f"{i}"
+
+        if prefix=='studparse':
+            callb_data = cb_data.studparse.new(group=addition['group'], weekday=iter, update='None')
+        elif prefix=='teachchoosesubj':
+            callb_data = cb_data.teachchoosesubj.new(acc_action='None', weekday=iter, page=page)
+
+        ikm_list.append((weekday_name, callb_data))
+    
+    ikm_list = (InlineKeyboardButton(text=name, callback_data=callback_data) for name, callback_data in ikm_list)
+    
+    acc_ikm.add(*ikm_list)
+    
+
+    del ikm_list, iter, i, weekday_name, callb_data, prefix, addition
 
     return acc_ikm
 # /дні тижня
 
-def marcup_get_subjects(*args, subjects: str, weekday):
-    text = str()
-    for el in args:
-        text += f"{el}_"
+
+def marcup_get_subjects(subjects: str, weekday, page):
+    teach_ikm = InlineKeyboardMarkup(row_width=2)
+
+    page = int(page)
+    cut = page*10
+
+    ikm_list = []
+    page_switch_list = []
+
+    page_subj_list = (subjects.split('-'))[cut:cut+10]
     
-    teach_ikm = InlineKeyboardMarkup()
+    if page_subj_list==[]:
+        return marcup_get_all_subjects(prefix='teachparse', acc_action='None', subjects=subjects, page=page, weekday=weekday)
+    
+    for subj_id in page_subj_list:
+        ikm_list.append(InlineKeyboardButton(SUBJECTS[subj_id], callback_data=cb_data.teachparse.new(subj_id=subj_id, weekday=weekday, update='None', page=page)))
+    
+    teach_ikm.add(*ikm_list)
 
-    buffer = []
-    for subj_id in subjects.split('-'):
-        buffer.append(subj_id)
-        if (len(buffer)==2):
-            teach_ikm.add(InlineKeyboardButton(SUBJECTS[buffer[0]], callback_data=f"{text}{weekday}_{buffer[0]}"),\
-                        InlineKeyboardButton(SUBJECTS[buffer[1]], callback_data=f"{text}{weekday}_{buffer[1]}"))
-            buffer.clear()
+    if page!=0:
+        page_switch_list.append(('«', cb_data.teachchoosesubj.new(acc_action='None', weekday=weekday, page=page-1)))
 
-    if (len(buffer)==1):
-        teach_ikm.add(InlineKeyboardButton(SUBJECTS[buffer[0]], callback_data=f"{text}{weekday}_{buffer[0]}"))
+    try:
+        if (subjects.split('-'))[cut+10]:
+            page_switch_list.append(('»', cb_data.teachchoosesubj.new(acc_action='None', weekday=weekday, page=page+1)))
+    except:
+        pass
 
-    del buffer, text
+    page_switch_list = (InlineKeyboardButton(text=name, callback_data=callback_data) for name, callback_data in page_switch_list)
+    teach_ikm.row(*page_switch_list)
+
+    teach_ikm.row(InlineKeyboardButton(MESSAGES['BACK_TO_WEEKDAYS'], callback_data=cb_data.teachweekday.new(page=page)))
+
+    del ikm_list, subj_id, page_switch_list
+
     return teach_ikm

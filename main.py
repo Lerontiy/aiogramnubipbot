@@ -11,10 +11,11 @@ logging.basicConfig(level=logging.INFO)
 from aiogram.utils.executor import start_webhook
 from aiogram import types, executor
 
-from create_bot import dp, bot
-from stuff.settings import MESSAGES, WEBHOOK_PATH, WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
+from create_bot import dp, bot, loop
+from stuff.settings import WEBHOOK_PATH, WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
 from stuff.database import db
 from stuff.my_requests import update_weekdays_html
+from stuff.messages import MESSAGES
 
 # мінус 2 години в heroku logs
 
@@ -24,7 +25,7 @@ callback.my_register_callback_query_handler(dp)
 admin.my_admin_register_message_handler(dp)    
 
 
-@dp.message_handler(chat_type=['private'])
+@dp.message_handler(chat_type=['private']) 
 async def nothing(message: types.Message):
     db.check_user_in_db(message.from_id)
 
@@ -32,24 +33,22 @@ async def nothing(message: types.Message):
         await message.reply(message)
         await bot.send_photo(photo="AgACAgIAAxkBAAIKhmNe6GvJ_boVFKmcu60eQkx7cjgsAAITxDEbGbX5Si3n-2-h7v1lAQADAgADeAADKgQ", chat_id=message.from_user.id)
     else:
-        await message.answer(text=MESSAGES["HELP_MESS"], parse_mode='html')
+        await message.answer(text=MESSAGES['HELP_MESS'])
 
 
 async def on_startup(dp):
+    await db.recreate_sql()
     await bot.set_webhook(WEBHOOK_URL) 
-
+    pass
 
 async def on_shutdown(dp):
-    logging.warning('Shutting down..')
-
-    await bot.delete_webhook()   
+    await db.recreate_mysql()
+    await bot.delete_webhook()
+    pass
 
 
 if __name__ == '__main__':
-    update_weekdays_html()
-
-    loop = asyncio.new_event_loop()
-
+    loop.create_task(update_weekdays_html())
     start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,
@@ -60,8 +59,21 @@ if __name__ == '__main__':
         port=int(os.environ.get("PORT", WEBAPP_PORT)),
         loop=loop,
         )
+
+    """ 
+    розкоментувати webhook в функціях on/off_shutdown в main.py
+    розкоментувати перестворення баз даних в функціях on/off_shutdown в main.py
+    змінити start_polling() на start_webhook() в main.py
+    змінити дійсний API Token в settings.py 
+    """
     
-    #executor.start_polling(dp, skip_updates=False)
+    #executor.start_polling(
+    #    dispatcher=dp,
+    #    skip_updates=False,
+    #    loop=loop,
+    #    on_startup=on_startup,
+    #    on_shutdown=on_shutdown,
+    #    )
     
 
     

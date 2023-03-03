@@ -1,10 +1,13 @@
 from aiogram import types, Dispatcher
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+#from aiogram.utils.callback_data import CallbackData
+from aiogram.dispatcher.filters import Text
 
 from create_bot import bot
-from stuff.settings import WEEKDAYS, FSM_ikm, MESSAGES
-from stuff.settings import *
+from stuff.settings import FSM_ikm
 from stuff.marcups import marcup_get_weekdays
+from stuff.messages import MESSAGES
+import stuff.callback_data as cb_data
 
 from datetime import date
 
@@ -24,75 +27,48 @@ async def start(message: types.Message):
 
 #@dp.message_handler(commands=['help'])
 async def help(message: types.Message):
-    await bot.send_message(message.from_user.id, text=MESSAGES["HELP_MESS"], parse_mode='html')
+    await bot.send_message(message.from_user.id, text=MESSAGES["HELP_MESS"])
 
 
-#@dp.message_handler(commands=['schedule'])
 async def schedule(message: types.Message):
-    db.check_user_in_db(message.from_user.id)
-
-    group = db.get_group(message.from_user.id)
-
-    
-    if (group!=None and group!=""):
-        acc_ikm = marcup_get_weekdays("studparse", group)
-
-        department = db.get_department_by_group(group)
-        course = db.get_course_by_group(group)
-
-        acc_ikm.add(InlineKeyboardButton("« Назад до груп", callback_data=f"studgroup_{course}_{department}"))
-
-        await bot.send_message(message.from_user.id, text="Обери потрібний день тижня:", reply_markup=acc_ikm, parse_mode="html")
-
-    else:
-        acc_ikm = InlineKeyboardMarkup()
-
-        acc_ikm.add(InlineKeyboardButton("1 курс", callback_data=f"studdep_1_None"), InlineKeyboardButton("2 курс", callback_data=f"studdep_2_None"))
-        acc_ikm.add(InlineKeyboardButton("3 курс", callback_data=f"studdep_3_None"), InlineKeyboardButton("4 курс", callback_data=f"studdep_4_None"))
-
-        await bot.send_message(message.from_user.id, text="Обери свій курс:", reply_markup=acc_ikm)
-
-
-async def noschedule(message: types.Message):
     db.check_user_in_db(message.from_id)
 
-    if (db.user_is_admin(message.from_id)):
-        #await message.reply(message)
-        #await bot.send_photo(photo="AgACAgIAAxkBAAIKhmNe6GvJ_boVFKmcu60eQkx7cjgsAAITxDEbGbX5Si3n-2-h7v1lAQADAgADeAADKgQ", chat_id=message.from_user.id)
-        acc_ikm = InlineKeyboardMarkup()
-       
-        db.check_user_in_db(message.from_user.id)
+    acc_ikm = InlineKeyboardMarkup(row_width=1)
+    
+    db.check_user_in_db(message.from_user.id)
 
-        acc_type = db.get_acctype(message.from_user.id)
-            
-            
+    acc_type = db.get_acctype(message.from_user.id)
+        
+    if (acc_type=="0") or (acc_type=="1"):
         if (acc_type=="0"):
             group = db.get_group(message.from_user.id)
 
-            acc_ikm = marcup_get_weekdays("studparse", group)
+            acc_ikm = marcup_get_weekdays(prefix='studparse', group=group)
 
-            await bot.send_message(message.from_user.id, text="Обери потрібний день тижня:", reply_markup=acc_ikm, parse_mode="html")
+            department = db.get_department_by_group(group)
+            course = db.get_course_by_group(group)
+
+            clb_data = cb_data.studgroup.new(course=course, department=department, acc_action='None')
+            acc_ikm.row(InlineKeyboardButton(MESSAGES['BACK_TO_GROUPS'], callback_data=clb_data))
             
+            del group, department, course
 
         elif (acc_type=="1"):
-            acc_ikm = marcup_get_weekdays("teachchoosesubj", "None")
+            acc_ikm = marcup_get_weekdays(prefix="teachchoosesubj", addition='None')
 
-            acc_ikm.add(InlineKeyboardButton("« Назад", callback_data=f"htoya_None"))
+            acc_ikm.row(InlineKeyboardButton(MESSAGES['BACK'], callback_data=cb_data.htoya.new(acc_action='None')))
 
-            try:
-                await bot.send_message(chat_id=message.from_user.id, text="Обери потрібний день тижня", reply_markup=acc_ikm)
-            except:
-                pass
-                
-                
-        else:
-            acc_ikm.add(InlineKeyboardButton("Я студент", callback_data=f"studcourse"))
-            acc_ikm.add(InlineKeyboardButton("Я викладач", callback_data=f"teachchoosesubj_None"))
+
+        await message.answer(text=MESSAGES['CHOOSE_WEEKDAY'], reply_markup=acc_ikm)
             
-            try:
-                await bot.send_message(message.from_user.id, text="Оберіть хто ви:\n(/settings - створити акаунт)", reply_markup=acc_ikm)
-            except:
-                pass
+            
+    else:
+        acc_ikm.add(InlineKeyboardButton(MESSAGES['IM_STUDENT'], callback_data=cb_data.studcourse.new(acc_action='None')),\
+                    InlineKeyboardButton(MESSAGES['IM_TEACHER'], callback_data=cb_data.teachweekday.new(page='0')))
+        
+        await message.answer(text=MESSAGES['CHOOSE_WHO_ARE_YOU']+"\n/settings", reply_markup=acc_ikm)
+
+    del acc_ikm, acc_type
 
 
 # розклад дзвінків
@@ -101,24 +77,35 @@ async def timetable(message: types.Message):
 # /розклад дзвінків
 
 # налаштування
-async def settings(message: types.Message):
-    db.check_user_in_db(message.from_id)
+async def settings(message: types.Message|types.CallbackQuery):
+    #print(type(message))
+    db.check_user_in_db(message.from_user.id)
 
-    set_ikm = InlineKeyboardMarkup()
+    set_ikm = InlineKeyboardMarkup(row_width=1)
 
     l = [None, '']
 
-    if db.get_acctype(message.from_id) in l:
-        text = "Створити акаунт"
+    if db.get_acctype(message.from_user.id) in l:
+        text = MESSAGES['CREATE_ACC']
     else:
-        text = "Внести зміни в акаунт"
+        text = MESSAGES['UPDATE_ACC']
 
-    set_ikm.add(InlineKeyboardButton(text, callback_data="studcourse_change"))
+    set_ikm.row(InlineKeyboardButton(text, callback_data=cb_data.htoya.new(acc_action='update')))
         
-    if (db.user_is_admin(message.from_id)):
-        set_ikm.add(InlineKeyboardButton("Внести зміни в акаунт (адмін)", callback_data="htoya_change"))
+    #if (db.user_is_admin(message.from_user.id)):
+    #    set_ikm.row(InlineKeyboardButton(text+" (адмін)", callback_data=cb_data.htoya.new(acc_action='update')))
 
-    await message.answer("Налаштування", reply_markup=set_ikm)
+    #await message.answer(MESSAGES['SETTINGS'], reply_markup=set_ikm)
+    if type(message)==types.Message:
+        await bot.send_message(chat_id=message.from_user.id, text=MESSAGES['SETTINGS'], reply_markup=set_ikm)
+    else:
+        try:
+            await bot.edit_message_text(chat_id=message.from_user.id,\
+                message_id=message.message.message_id, text=MESSAGES['SETTINGS'], reply_markup=set_ikm)
+        except:
+            pass
+
+    del set_ikm, l, text
 # /налаштування
 
 
@@ -129,9 +116,9 @@ def my_register_message_handler(dp: Dispatcher):
     dp.register_message_handler(help, commands=['help'], chat_type=['private'])
 
     dp.register_message_handler(schedule, commands=['schedule'], chat_type=['private'])
-    dp.register_message_handler(noschedule, commands=['noschedule'], chat_type=['private'])
 
     dp.register_message_handler(timetable, commands=['timetable'], chat_type=['private'])
 
     dp.register_message_handler(settings, commands=['settings'], chat_type=['private'])
+    dp.register_callback_query_handler(settings, cb_data.settings.filter())
     
