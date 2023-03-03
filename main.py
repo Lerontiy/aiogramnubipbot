@@ -38,27 +38,27 @@ async def nothing(message: types.Message):
 
 async def on_startup(dp):
     await db.recreate_sql()
-    #await bot.set_webhook(WEBHOOK_URL) 
+    await bot.set_webhook(WEBHOOK_URL) 
     pass
 
 async def on_shutdown(dp):
     #await db.recreate_mysql()
-    #await bot.delete_webhook()
+    await bot.delete_webhook()
     pass
 
 
 if __name__ == '__main__':
     loop.create_task(update_weekdays_html())
-    #start_webhook(
-    #    dispatcher=dp,
-    #    webhook_path=WEBHOOK_PATH,
-    #    on_startup=on_startup,
-    #    on_shutdown=on_shutdown,
-    #    skip_updates=False,
-    #    host=WEBAPP_HOST,
-    #    port=int(os.environ.get("PORT", WEBAPP_PORT)),
-    #    loop=loop,
-    #    )
+    start_webhook(
+        dispatcher=dp,
+        webhook_path=WEBHOOK_PATH,
+        on_startup=on_startup,
+        on_shutdown=on_shutdown,
+        skip_updates=False,
+        host=WEBAPP_HOST,
+        port=int(os.environ.get("PORT", WEBAPP_PORT)),
+        loop=loop,
+        )
 
     """ 
     розкоментувати webhook в функціях on/off_shutdown в main.py
@@ -67,13 +67,13 @@ if __name__ == '__main__':
     змінити дійсний API Token в settings.py 
     """
     
-    executor.start_polling(
-        dispatcher=dp,
-        skip_updates=False,
-        loop=loop,
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        )
+    #executor.start_polling(
+    #    dispatcher=dp,
+    #    skip_updates=False,
+    #    loop=loop,
+    #    on_startup=on_startup,
+    #    on_shutdown=on_shutdown,
+    #    )
     
 
     
