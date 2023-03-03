@@ -56,7 +56,7 @@ if __name__ == '__main__':
         on_shutdown=on_shutdown,
         skip_updates=False,
         host=WEBAPP_HOST,
-        port=int(os.environ.get("PORT", WEBAPP_PORT)),
+        port=WEBAPP_PORT,
         loop=loop,
         )
 
