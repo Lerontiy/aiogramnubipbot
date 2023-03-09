@@ -20,9 +20,9 @@ async def update_weekdays_html():
     del l, r, url
     print("update")
     await asyncio.sleep(60*5)
-    print("A")
-    requests.get(my_request.app_url, headers=my_request.headers) # робить запрос до програми, аби вона не заснула
-    print("B")
+    #print("A")
+    #requests.get(my_request.app_url, headers=my_request.headers) # робить запит до програми, аби вона не заснула
+    #print("B")
     await update_weekdays_html()
 
 
