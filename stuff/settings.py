@@ -8,7 +8,7 @@ API_TOKEN = "5403738951:AAEbbME_mAhs9sVAQxvy9KYGG5MjktTfaW8"
 
 
 # webhook settings
-WEBHOOK_HOST = "https://aiogramnubipbot.herokuapp.com"
+WEBHOOK_HOST = "https://nubipbot.herokuapp.com/"
 WEBHOOK_PATH = f"/{API_TOKEN}"
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
