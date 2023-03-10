@@ -10,7 +10,7 @@ storage = MemoryStorage()
 loop = asyncio.new_event_loop()
 
 # Initialize bot and dispatcher
-bot = Bot(token=API_TOKEN, loop=loop, parse_mode='html')
-dp = Dispatcher(bot, storage=storage)
+bot = Bot(token=API_TOKEN, parse_mode='html', loop=loop)
+dp = Dispatcher(bot, storage=storage, loop=loop)
 
 del storage

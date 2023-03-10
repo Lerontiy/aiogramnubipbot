@@ -37,19 +37,31 @@ async def nothing(message: types.Message):
 
 
 async def on_startup(dp):
+    #await update_weekdays_html()
     await db.recreate_sql()
     await bot.set_webhook(WEBHOOK_URL) 
     pass
 
+
 async def on_shutdown(dp):
-    #await db.recreate_mysql()
     await bot.delete_webhook()
     pass
 
 
-def main():
-    loop.create_task(update_weekdays_html())
+if __name__ == '__main__':
+    #asyncio.run(main())
     
+    
+    
+    #executor.start_polling(
+    #    dispatcher=dp,
+    #    on_startup=on_startup,
+    #    on_shutdown=on_shutdown,
+    #    skip_updates=False,
+    #    loop=loop,
+    #    )
+    
+    loop.create_task(update_weekdays_html())
     start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,
@@ -60,24 +72,12 @@ def main():
         port=int(os.environ.get('PORT', WEBAPP_PORT)),
         loop=loop,
         )
-
-    #executor.start_polling(
-    #    dispatcher=dp,
-    #    skip_updates=False,
-    #    loop=loop,
-    #    on_startup=on_startup,
-    #    on_shutdown=on_shutdown,
-    #    )
     
-    #await asyncio.sleep(0)
-
-if __name__ == '__main__':
-    #asyncio.run(main())
-    main()
 
     """ 
     змінити start_polling() на start_webhook() в main.py
     змінити дійсний API Token в settings.py 
+    змінити перевикликання функції в update_weekdays_html()
     """
     
     

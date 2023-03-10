@@ -357,7 +357,6 @@ async def stud_parse(callback:types.CallbackQuery, callback_data:dict):
         pass
 
     dep = db.get_department_by_group(group)
-
     html = my_request.get_weekday_html(weekday)
 
     # ЕВ/Маркетинг/КІ/Аудиторії
@@ -385,6 +384,7 @@ async def stud_parse(callback:types.CallbackQuery, callback_data:dict):
         thtml = BS(str(el_tr), 'html.parser')
         for iter_td,el_td in enumerate(thtml.select("td")):
             if (iter_td==0) and (group[:3] in el_td.text) and (iter_tr>2):
+                
                 if (group[:3]=="303") or (group[:3]=="305"):
                     if (group[-1]==el_td.text[-1]):
                         can_write = True
@@ -408,7 +408,7 @@ async def stud_parse(callback:types.CallbackQuery, callback_data:dict):
     text = []
     html = BS(str(div), 'html.parser')
     can_stop = False
-    k = False
+    can_skip_td = False
 
     for iter_tr,el_tr in enumerate(html.select("tbody > tr")):
         if (iter_tr in SKIP_TR):
@@ -416,51 +416,82 @@ async def stud_parse(callback:types.CallbackQuery, callback_data:dict):
         else:
             thtml = BS(str(el_tr), 'html.parser')
             for iter_td,el_td in enumerate(thtml.select("td")):
-                if (iter_td == 0) and (num < 0):
-                    try: 
-                        s = int(el_td.text)
-                        del s
-                        break
-                    except:
-                        if (iter_tr==1) and (iter_td==0):
-                            data = el_td.text.split(' ')
-                            while "" in data: 
-                                data.remove("")
+                if (num<0):
+                    if (iter_td==0):
+                        try: 
+                            s = int(el_td.text)
+                            del s
+                            break
+                        except:
+                            if (iter_tr==1):
+                                day_p_mon = []
+                                data = el_td.text.split(' ')
+                                while "" in data: 
+                                    data.remove("")
 
-                            data = [data[1], data[2]]
-                            day_p_mon = " ".join(data)
-                            del data
-                elif (num==iter_td) and (len(text) < 5):
+                                for iter, i in enumerate(data):
+                                    try:
+                                        s = int(i)
+                                        del s
+                                        day_p_mon = [data[iter], data[iter+1]]
+                                        break
+                                    except:
+                                        pass
+
+                                day_p_mon = " ".join(day_p_mon)
+                                del data
+                    else:
+                        if (group[:3] in el_td.text) and (iter_tr>2) and (f"({group[:3]})" not in el_td.text):
+                            
+                            if (group[:3] in ["303", "305"]):
+                                if (group[-1:]==el_td.text[-1:]):
+                                    #print("1")
+                                    num = iter_td
+                            else:
+                                #print("2")
+                                num = iter_td
+
+                            try:
+                                colspan = int(el_td['colspan'])
+                            except:
+                                colspan = 1
+
+                            continue
+
+                elif (num==(iter_td+1)):
+                    try:
+                        if int(el_td['colspan'])==colspan:
+                            continue
+                    except:
+                        continue
+
+                    #print("BBB")
+
+                    can_skip_td = True
+                
                     if (el_td.text=="-"):
                         text.append("")
                     else:
                         text.append(el_td.text)
-                    k = False
-                    if (len(text)==5):
-                        can_stop = True
-                        break
+
+                    continue
+
+                elif (num==iter_td) and (can_skip_td==False):
+                    #print("AAA")
+                    if (el_td.text=="-"):
+                        text.append("")
                     else:
-                        continue
-                elif (num-1 == iter_td) and (num > 0) and (len(text) < 5):
-                    if (k==True):
-                        if (el_td.text=="-"):
-                            text.append("")
-                        else:
-                            text.append(m)
-                    m = el_td.text
-                    k = True
-                try:
-                    if (group[:3] in el_td.text) and (iter_tr>2):
-                        if (group[:3] in ["303", "305"]):
-                            if (group[-1]==el_td.text[-1]):
-                                num = iter_td
-                                break
-                        else:
-                            num = iter_td
-                            break
-                except:
-                    pass
+                        text.append(el_td.text)
+
+                can_skip_td = False
+                if (len(text)==5):
+                    can_stop = True
+                    break
+                else:
+                    continue
+
             if (can_stop):
+                #print("----------")
                 break
                     
     # b = [f"<b>{day_p_mon} {group}</b>"]
@@ -508,7 +539,17 @@ async def stud_parse(callback:types.CallbackQuery, callback_data:dict):
 # /парсинг розкладу студенти
 # /блок для студентів
 
+"""
+прискакати, скуштувати, сфальшивити, розчечипи, зшитий, спідлоба,
+прежовтий, прижовклий, прикривати, преподобний, примотаний, 
+пресмачний, придорожній, привабити
+"""
 
+"""
+припаркуватися, пригнічений, прикарпаття, предовгий, престол, 
+предивний, припорошений, приярок, причорнілий, презавзятий, 
+прихворіти, привласнити, преніжний, препишно, приморожений, прегордий
+"""
 
 # робота з акаунтом
 async def update_account(callback: types.CallbackQuery, callback_data:dict):
