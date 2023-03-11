@@ -13,7 +13,6 @@ async def update_weekdays_html():
     del r, url
     print("update")
     await asyncio.sleep(60*5)
-    r = requests.get(WEBHOOK_HOST, headers=my_request.headers) # робить запит до програми, аби вона не заснула
     await update_weekdays_html()
 
 
