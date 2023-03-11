@@ -37,7 +37,6 @@ async def nothing(message: types.Message):
 
 
 async def on_startup(dp):
-    #await update_weekdays_html()
     await db.recreate_sql()
     await bot.set_webhook(WEBHOOK_URL) 
     pass
@@ -48,7 +47,8 @@ async def on_shutdown(dp):
     pass
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
+    #asyncio.run(update_weekdays_html())
     #executor.start_polling(
     #    dispatcher=dp,
     #    on_startup=on_startup,
