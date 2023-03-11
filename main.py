@@ -48,11 +48,7 @@ async def on_shutdown(dp):
     pass
 
 
-if __name__ == '__main__':
-    #asyncio.run(main())
-    
-    
-    
+if __name__ == '__main__':    
     #executor.start_polling(
     #    dispatcher=dp,
     #    on_startup=on_startup,

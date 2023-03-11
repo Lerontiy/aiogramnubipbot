@@ -15,10 +15,10 @@ class Database:
     async def mysql_connect(self):
         return await aiomysql.connect(\
                             host="eu-cdbr-west-03.cleardb.net", \
-                            user="bc5c7f07563fec", \
+                            user="b6b2270b23d27d", \
                             port=3306, \
-                            password="765381bc", \
-                            db="heroku_aa604352b17cb1e", \
+                            password="6a0804c5", \
+                            db="heroku_35fd6d11c7b4ee3", \
                             loop=loop)
 
 
