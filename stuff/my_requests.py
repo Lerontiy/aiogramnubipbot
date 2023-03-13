@@ -6,11 +6,13 @@ import requests
 import asyncio
 
 async def update_weekdays_html():
+    l = []
     for url in my_request.url_spreadsheets:
         r = requests.get(url, headers=my_request.headers)
-        my_request.weekdays_html.append(BS(r.content, 'html.parser'))
-    
-    del r, url
+        l.append(BS(r.content, 'html.parser'))
+    my_request.weekdays_html = l
+    del r, url, l
+
     print("update")
     await asyncio.sleep(60*5)
     await update_weekdays_html()
