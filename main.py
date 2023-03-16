@@ -49,6 +49,8 @@ async def on_shutdown(dp):
 
 
 if __name__ == '__main__':
+    asyncio.set_event_loop(loop)
+
     loop.create_task(every(60*5, update_weekdays_html))
     
     #executor.start_polling(
