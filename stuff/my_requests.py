@@ -1,11 +1,13 @@
 from stuff.settings import WEBHOOK_HOST
 
-
+import threading
 from bs4 import BeautifulSoup as BS
 import requests
 import asyncio
+import time
 
-async def update_weekdays_html():
+
+def update_weekdays_html():
     l = []
     for url in my_request.url_spreadsheets:
         r = requests.get(url, headers=my_request.headers)
@@ -14,8 +16,10 @@ async def update_weekdays_html():
     del r, url, l
 
     print("update")
-    await asyncio.sleep(60*5)
-    await update_weekdays_html()
+    #await asyncio.sleep(60*5)
+    #await update_weekdays_html()
+
+update_weekdays_html_timer = threading.Timer(5, update_weekdays_html)
 
 
 class Request:

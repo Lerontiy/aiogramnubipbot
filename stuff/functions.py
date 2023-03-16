@@ -1,3 +1,4 @@
+import asyncio
 from stuff.settings import EQUAL_SUBJECTS
 
 def in_both_str(*strs, string:str="None", excepting_string:str="None"):
@@ -17,3 +18,9 @@ def equal_strings_in_something(main_string:str, something):
             else:
                 continue
     return False
+
+
+async def every(__seconds: float, func, *args, **kwargs):
+    while True:
+        func(*args, **kwargs)
+        await asyncio.sleep(__seconds)

@@ -26,7 +26,8 @@ class Database:
                             port=3306, \
                             password="765381bc", \
                             db="heroku_aa604352b17cb1e", \
-                            loop=loop)
+                            #loop=loop, \
+                            )
 
 
     def sql_connect(self):

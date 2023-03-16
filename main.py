@@ -8,14 +8,15 @@ nest_asyncio.apply()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-from aiogram.utils.executor import start_webhook
+from aiogram.utils.executor import start_webhook, start_polling
 from aiogram import types, executor
 
 from create_bot import dp, bot, loop
 from stuff.settings import WEBHOOK_PATH, WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
 from stuff.database import db
-from stuff.my_requests import update_weekdays_html
+from stuff.my_requests import update_weekdays_html_timer, update_weekdays_html
 from stuff.messages import MESSAGES
+from stuff.functions import every
 
 # мінус 2 години в heroku logs
 
@@ -48,7 +49,8 @@ async def on_shutdown(dp):
 
 
 if __name__ == '__main__':
-    #asyncio.run(update_weekdays_html())
+    loop.create_task(every(60*5, update_weekdays_html))
+    
     #executor.start_polling(
     #    dispatcher=dp,
     #    on_startup=on_startup,
@@ -57,8 +59,7 @@ if __name__ == '__main__':
     #    loop=loop,
     #    )
     
-    loop.create_task(update_weekdays_html())
-    start_webhook(
+    executor.start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,
         on_startup=on_startup,
@@ -73,7 +74,6 @@ if __name__ == '__main__':
     """ 
     змінити start_polling() на start_webhook() в main.py
     змінити дійсний API Token в settings.py 
-    змінити перевикликання функції в update_weekdays_html()
     """
     
     
