@@ -32,6 +32,7 @@ async def nothing(message: types.Message):
 
     if (db.user_is_admin(message.from_id)==True):
         await message.reply(message)
+        update_weekdays_html()
         await bot.send_photo(photo="AgACAgIAAxkBAAIKhmNe6GvJ_boVFKmcu60eQkx7cjgsAAITxDEbGbX5Si3n-2-h7v1lAQADAgADeAADKgQ", chat_id=message.from_user.id)
     else:
         await message.answer(text=MESSAGES['HELP_MESS'])
@@ -39,19 +40,22 @@ async def nothing(message: types.Message):
 
 async def on_startup(dp):
     await db.recreate_sql()
-    await bot.set_webhook(WEBHOOK_URL) 
+    #await bot.set_webhook(WEBHOOK_URL) 
     pass
 
 
 async def on_shutdown(dp):
-    await bot.delete_webhook()
+    update_weekdays_html_timer.cancel()
+    #await bot.delete_webhook()
     pass
 
 
 if __name__ == '__main__':
     #asyncio.set_event_loop(loop)
+    update_weekdays_html()
+    #update_weekdays_html_timer.start()
 
-    loop.create_task(every(1*5, update_weekdays_html))
+    #loop.create_task(every(60*5, update_weekdays_html))
     
     #executor.start_polling(
     #    dispatcher=dp,
