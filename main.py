@@ -40,13 +40,13 @@ async def nothing(message: types.Message):
 
 async def on_startup(dp):
     await db.recreate_sql()
-    #await bot.set_webhook(WEBHOOK_URL) 
+    await bot.set_webhook(WEBHOOK_URL) 
     pass
 
 
 async def on_shutdown(dp):
-    update_weekdays_html_timer.cancel()
-    #await bot.delete_webhook()
+    #update_weekdays_html_timer.cancel()
+    await bot.delete_webhook()
     pass
 
 
