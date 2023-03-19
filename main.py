@@ -52,13 +52,18 @@ async def on_shutdown(dp):
     pass
 
 
+def foo():
+    print("AAA")
+
+
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     #asyncio.set_event_loop(loop)
     #update_weekdays_html()
     #update_weekdays_html_timer.start()
 
-    loop.create_task(every(5, update_weekdays_html))
+    loop.create_task(every(5, foo))
+    loop.create_task(update_weekdays_html())
     #print(loop.get_task_factory())
     
     #executor.start_polling(
