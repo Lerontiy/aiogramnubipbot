@@ -17,7 +17,8 @@ async def update_weekdays_html():
 
     print("update")
     await asyncio.sleep(5)
-    await update_weekdays_html()
+    print("AAA")
+    #await update_weekdays_html()
     
     #await asyncio.sleep(60*5)
     #await update_weekdays_html()
@@ -37,6 +38,16 @@ class Request:
             "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwv0DHzrT97qJvh7lBovx6BubKJIO_gk_Lesgyn22RlxMclC3z1OW6TKJDhFe1CBJ6fGDSUcciZXzX/pubhtml",
             "https://docs.google.com/spreadsheets/d/e/2PACX-1vScVScHS0fxSDzdeJwVFgTXo0mSfgZ-Z65KzCLc1bcsX-73tI4UW4Fie8CMpCMVdTD34JNNoM0-oN-7/pubhtml",
         ]
+        self.funcs = [self.run1, self.run2]
+        self.countFuncs = 0
+
+
+    async def run1():
+        await update_weekdays_html()
+
+
+    async def run2():
+        await update_weekdays_html()
 
 
     def get_weekday_html(self, weekday):    
