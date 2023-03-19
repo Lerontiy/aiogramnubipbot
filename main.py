@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 from aiogram.utils.executor import start_webhook, start_polling
 from aiogram import types, executor
 
-from create_bot import dp, bot, loop
+from create_bot import dp, bot
 from stuff.settings import WEBHOOK_PATH, WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
 from stuff.database import db
 from stuff.my_requests import update_weekdays_html_timer, update_weekdays_html
@@ -30,12 +30,14 @@ admin.my_admin_register_message_handler(dp)
 async def nothing(message: types.Message):
     db.check_user_in_db(message.from_id)
 
-    if (db.user_is_admin(message.from_id)==True):
-        await message.reply(message)
-        update_weekdays_html()
-        await bot.send_photo(photo="AgACAgIAAxkBAAIKhmNe6GvJ_boVFKmcu60eQkx7cjgsAAITxDEbGbX5Si3n-2-h7v1lAQADAgADeAADKgQ", chat_id=message.from_user.id)
-    else:
-        await message.answer(text=MESSAGES['HELP_MESS'])
+    await message.answer(text=MESSAGES['HELP_MESS'])
+
+    #if (db.user_is_admin(message.from_id)==True):
+    #    await message.reply(message)
+    #    update_weekdays_html()
+    #    await bot.send_photo(photo="AgACAgIAAxkBAAIKhmNe6GvJ_boVFKmcu60eQkx7cjgsAAITxDEbGbX5Si3n-2-h7v1lAQADAgADeAADKgQ", chat_id=message.from_user.id)
+    #else:
+    #    await message.answer(text=MESSAGES['HELP_MESS'])
 
 
 async def on_startup(dp):
@@ -45,17 +47,18 @@ async def on_startup(dp):
 
 
 async def on_shutdown(dp):
-    #update_weekdays_html_timer.cancel()
     await bot.delete_webhook()
     pass
 
 
 if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
     #asyncio.set_event_loop(loop)
-    update_weekdays_html()
+    #update_weekdays_html()
     #update_weekdays_html_timer.start()
 
-    #loop.create_task(every(60*5, update_weekdays_html))
+    loop.create_task(every(5, update_weekdays_html))
+    #print(loop.get_task_factory())
     
     #executor.start_polling(
     #    dispatcher=dp,

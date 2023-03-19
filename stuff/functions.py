@@ -22,5 +22,6 @@ def equal_strings_in_something(main_string:str, something):
 
 async def every(__seconds: float, func, *args, **kwargs):
     while True:
+        print("every")
         func(*args, **kwargs)
         await asyncio.sleep(__seconds)

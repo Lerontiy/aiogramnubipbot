@@ -3,30 +3,22 @@ import asyncio
 import sqlite3
 import aiomysql
 
-from create_bot import loop
-
 from stuff.settings import SUBJECTS
 
 class Database:
     def __init__(self):
         self.con = self.sql_connect()
+        self.loop = asyncio.get_event_loop()
 
 
     async def mysql_connect(self):
         return await aiomysql.connect(\
-                            #host="eu-cdbr-west-03.cleardb.net", \
-                            #user="b6b2270b23d27d", \
-                            #port=3306, \
-                            #password="6a0804c5", \
-                            #db="heroku_35fd6d11c7b4ee3", \
-                            #loop=loop)
-
                             host="eu-cdbr-west-03.cleardb.net", \
                             user="bc5c7f07563fec", \
                             port=3306, \
                             password="765381bc", \
                             db="heroku_aa604352b17cb1e", \
-                            #loop=loop, \
+                            loop=self.loop
                             )
 
 
