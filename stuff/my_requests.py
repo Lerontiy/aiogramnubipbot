@@ -16,9 +16,9 @@ async def update_weekdays_html():
     del r, url, l
 
     print("update")
-    await asyncio.sleep(5)
-    print("після сну!!!")
-    #await update_weekdays_html()
+    await asyncio.sleep(60*5)
+    #print("після сну!!!")
+    await update_weekdays_html()
     
     #await asyncio.sleep(60*5)
     #await update_weekdays_html()
