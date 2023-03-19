@@ -11,7 +11,8 @@ logging.basicConfig(level=logging.INFO)
 from aiogram.utils.executor import start_webhook, start_polling
 from aiogram import types, executor
 
-from create_bot import dp, bot
+from create_bot import dp, bot, loop
+asyncio.set_event_loop(loop)
 from stuff.settings import WEBHOOK_PATH, WEBHOOK_URL, WEBAPP_HOST, WEBAPP_PORT
 from stuff.database import db
 from stuff.my_requests import update_weekdays_html_timer, update_weekdays_html
