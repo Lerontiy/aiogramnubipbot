@@ -17,7 +17,7 @@ async def update_weekdays_html():
 
     print("update")
     await asyncio.sleep(5)
-    print("AAA")
+    print("після сну!!!")
     #await update_weekdays_html()
     
     #await asyncio.sleep(60*5)

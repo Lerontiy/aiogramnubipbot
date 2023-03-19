@@ -43,12 +43,12 @@ async def nothing(message: types.Message):
 
 async def on_startup(dp):
     await db.recreate_sql()
-    await bot.set_webhook(WEBHOOK_URL) 
+    #await bot.set_webhook(WEBHOOK_URL) 
     pass
 
 
 async def on_shutdown(dp):
-    await bot.delete_webhook()
+    #await bot.delete_webhook()
     pass
 
 
@@ -61,26 +61,27 @@ if __name__ == '__main__':
 
     #loop.create_task(every(5, foo))
     loop.create_task(update_weekdays_html())
+    print("після створення завдання")
     #print(loop.get_task_factory())
     
-    #executor.start_polling(
+    executor.start_polling(
+        dispatcher=dp,
+        on_startup=on_startup,
+        on_shutdown=on_shutdown,
+        skip_updates=False,
+        loop=loop,
+        )
+    
+    #executor.start_webhook(
     #    dispatcher=dp,
     #    on_startup=on_startup,
     #    on_shutdown=on_shutdown,
     #    skip_updates=False,
+    #    webhook_path=WEBHOOK_PATH,
+    #    host=WEBAPP_HOST,
+    #    port=int(os.environ.get('PORT', WEBAPP_PORT)),
     #    loop=loop,
     #    )
-    
-    executor.start_webhook(
-        dispatcher=dp,
-        webhook_path=WEBHOOK_PATH,
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        skip_updates=False,
-        host=WEBAPP_HOST,
-        port=int(os.environ.get('PORT', WEBAPP_PORT)),
-        loop=loop,
-        )
     
 
     """ 
