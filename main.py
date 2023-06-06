@@ -32,11 +32,11 @@ async def nothing(message: types.Message):
     db.check_user_in_db(message.from_id)
 
     await message.answer(text=MESSAGES['HELP_MESS'])
+    #await message.reply(message)
 
     #if (db.user_is_admin(message.from_id)==True):
     #    await message.reply(message)
-    #    update_weekdays_html()
-    #    await bot.send_photo(photo="AgACAgIAAxkBAAIKhmNe6GvJ_boVFKmcu60eQkx7cjgsAAITxDEbGbX5Si3n-2-h7v1lAQADAgADeAADKgQ", chat_id=message.from_user.id)
+    #    await message.answer_photo(photo=open("stuff/timetable.jpg", 'rb'), caption="ABOBA")
     #else:
     #    await message.answer(text=MESSAGES['HELP_MESS'])
 
@@ -85,7 +85,6 @@ if __name__ == '__main__':
     
 
     """ 
-    змінити start_polling() на start_webhook() в main.py
     змінити дійсний API Token в settings.py 
     """
     

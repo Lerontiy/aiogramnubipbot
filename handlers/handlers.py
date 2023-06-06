@@ -59,21 +59,23 @@ async def schedule(message: types.Message):
             acc_ikm.row(InlineKeyboardButton(MESSAGES['BACK'], callback_data=cb_data.htoya.new(acc_action='None')))
 
 
-        await message.answer(text=MESSAGES['CHOOSE_WEEKDAY'], reply_markup=acc_ikm)
+        await message.answer_photo(photo=open("stuff/timetable.jpg", 'rb'), caption=MESSAGES['CHOOSE_WEEKDAY'], reply_markup=acc_ikm)
             
             
     else:
         acc_ikm.add(InlineKeyboardButton(MESSAGES['IM_STUDENT'], callback_data=cb_data.studcourse.new(acc_action='None')),\
                     InlineKeyboardButton(MESSAGES['IM_TEACHER'], callback_data=cb_data.teachweekday.new(page='0')))
-        
-        await message.answer(text=MESSAGES['CHOOSE_WHO_ARE_YOU']+"\n/settings", reply_markup=acc_ikm)
+
+        await message.answer_photo(photo=open("stuff/timetable.jpg", 'rb'), caption=MESSAGES['CHOOSE_WHO_ARE_YOU'], reply_markup=acc_ikm)
+
+        #await message.answer(text=MESSAGES['CHOOSE_WHO_ARE_YOU']+"\n/settings", reply_markup=acc_ikm)
 
     del acc_ikm, acc_type
 
 
 # розклад дзвінків
 async def timetable(message: types.Message):
-    await bot.send_photo(photo="AgACAgIAAxkBAAIKhmNe6GvJ_boVFKmcu60eQkx7cjgsAAITxDEbGbX5Si3n-2-h7v1lAQADAgADeAADKgQ", chat_id=message.from_user.id)
+    await message.answer_photo(photo=open("stuff/timetable.jpg", 'rb'))
 # /розклад дзвінків
 
 # налаштування
@@ -97,13 +99,19 @@ async def settings(message: types.Message|types.CallbackQuery):
 
     #await message.answer(MESSAGES['SETTINGS'], reply_markup=set_ikm)
     if type(message)==types.Message:
-        await bot.send_message(chat_id=message.from_user.id, text=MESSAGES['SETTINGS'], reply_markup=set_ikm)
+        await message.answer_photo(photo=open("stuff/settings.png", 'rb'), caption=MESSAGES['SETTINGS'], reply_markup=set_ikm)
+
+        #await bot.send_message(chat_id=message.from_user.id, text=MESSAGES['SETTINGS'], reply_markup=set_ikm)
     else:
         try:
-            await bot.edit_message_text(chat_id=message.from_user.id,\
-                message_id=message.message.message_id, text=MESSAGES['SETTINGS'], reply_markup=set_ikm)
+            await bot.edit_message_caption(chat_id=message.from_user.id,\
+                message_id=message.message.message_id, caption=MESSAGES['SETTINGS'], reply_markup=set_ikm)
         except:
-            pass
+            try:
+                await bot.edit_message_text(chat_id=message.from_user.id,\
+                    message_id=message.message.message_id, text=MESSAGES['SETTINGS'], reply_markup=set_ikm)
+            except:
+                pass
 
     del set_ikm, l, text
 # /налаштування

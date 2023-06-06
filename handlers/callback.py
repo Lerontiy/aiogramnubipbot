@@ -33,17 +33,21 @@ async def htoya(callback: types.CallbackQuery, callback_data: dict):
 
 
     if acc_action=="None":
-        text = MESSAGES["CHOOSE_WHO_ARE_YOU"]+"\n/settings"
+        text = MESSAGES["CHOOSE_WHO_ARE_YOU"]
     else:
         text = "<b>[Налаштування]</b> "+MESSAGES["CHOOSE_WHO_ARE_YOU"]
         acc_ikm.add(InlineKeyboardButton(MESSAGES["BACK_TO_SETTINGS"], callback_data=cb_data.settings.new()))
         
-
+    l = [callback.from_user.id, callback.message.message_id, text, acc_ikm]
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+        message_id=callback.message.message_id, caption=text, reply_markup=acc_ikm)
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        except:
+            pass
     
     del acc_action, acc_ikm, clback_data, text
 
@@ -62,10 +66,14 @@ async def teach_weekday(callback: types.CallbackQuery, callback_data:dict):
     teach_ikm.row(InlineKeyboardButton(MESSAGES["BACK"], callback_data=cb_data.htoya.new(acc_action='None')))
 
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=MESSAGES["CHOOSE_WEEKDAY"], reply_markup=teach_ikm)
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+        message_id=callback.message.message_id, caption=MESSAGES["CHOOSE_WEEKDAY"], reply_markup=teach_ikm)
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=MESSAGES["CHOOSE_WEEKDAY"], reply_markup=teach_ikm)
+        except:
+            pass
 
     del teach_ikm
 # /день тижня
@@ -112,10 +120,14 @@ async def teach_choose_subj(callback: types.CallbackQuery, callback_data:dict):
     #    teach_ikm = marcup_get_subjects(subjects=subjects, weekday=weekday, page=page)
     #
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=text, reply_markup=teach_ikm)
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+        message_id=callback.message.message_id, caption=text, reply_markup=teach_ikm)
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=text, reply_markup=teach_ikm)
+        except:
+            pass
 # /вибір предмета
 
 # парсинг розкладу викладачі
@@ -207,10 +219,14 @@ async def teach_parse(callback: types.CallbackQuery, callback_data:dict):
         )
 
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text="\n".join(send_text), parse_mode="html", reply_markup=teach_ikm)
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+        message_id=callback.message.message_id, caption="\n".join(send_text), parse_mode="html", reply_markup=teach_ikm)
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text="\n".join(send_text), parse_mode="html", reply_markup=teach_ikm)
+        except:
+            pass
 
     del subj_id, weekday, teach_ikm, html, groups, regime, subj, day_p_mon, div, dhtml, iter_tr, el_tr, thtml, iter_td, el_td, all_groups
 
@@ -244,10 +260,14 @@ async def stud_course(callback: types.CallbackQuery, callback_data:dict):
     acc_ikm.row(InlineKeyboardButton(MESSAGES["BACK"], callback_data=cb_data.htoya.new(acc_action=acc_action)))
     
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+        message_id=callback.message.message_id, caption=text, reply_markup=acc_ikm)
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        except:
+            pass
 
     del acc_action, text, acc_ikm, ikm_list
 # /курс
@@ -272,10 +292,14 @@ async def stud_department(callback:types.CallbackQuery, callback_data:dict):
     acc_ikm.row(InlineKeyboardButton(text=MESSAGES["BACK_TO_COURSES"], callback_data=cb_data.studcourse.new(acc_action)))
 
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+        message_id=callback.message.message_id, caption=text, reply_markup=acc_ikm)
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        except:
+            pass
 # /відділення студенти
 
 # група студенти
@@ -307,10 +331,14 @@ async def stud_group(callback: types.CallbackQuery, callback_data:dict):
     acc_ikm.row(InlineKeyboardButton(text=MESSAGES["BACK_TO_DEPARTMENTS"], callback_data=cb_data.studdep.new(course=course, acc_action=acc_action)))
 
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+        message_id=callback.message.message_id, caption=text, reply_markup=acc_ikm)
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        except:
+            pass
 # /група студенти
 
 # день тижня студенти
@@ -325,16 +353,20 @@ async def stud_weekday(callback: types.CallbackQuery | types.Message, callback_d
     acc_ikm.row(InlineKeyboardButton(MESSAGES["BACK_TO_GROUPS"], callback_data=cb_data.studgroup.new(course=course, department=department, acc_action='None')))
     
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=MESSAGES["CHOOSE_WEEKDAY"], reply_markup=acc_ikm)
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+        message_id=callback.message.message_id, caption=MESSAGES["CHOOSE_WEEKDAY"], reply_markup=acc_ikm)
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=MESSAGES["CHOOSE_WEEKDAY"], reply_markup=acc_ikm)
+        except:
+            pass
 
     del group, acc_ikm, department, course
 # /день тижня студенти
 
 # парсинг розкладу студенти
-async def stud_parse(callback:types.CallbackQuery, callback_data:dict):    
+async def stud_parse(callback:types.CallbackQuery, callback_data:dict):  
     # start_time = time.time()
     group = str(callback_data['group'])
     weekday = int(callback_data['weekday'])
@@ -528,10 +560,14 @@ async def stud_parse(callback:types.CallbackQuery, callback_data:dict):
     
     
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=send_text, reply_markup=studfind_ikm, parse_mode="html")
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, caption=send_text, reply_markup=studfind_ikm, parse_mode="html")
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+                message_id=callback.message.message_id, text=send_text, reply_markup=studfind_ikm, parse_mode="html")
+        except:
+            pass
 
 
     del num, thtml, el_tr, el_td, iter_td, html, text, studfind_ikm, weekday, group
@@ -569,10 +605,14 @@ async def update_account(callback: types.CallbackQuery, callback_data:dict):
             
     
     try:
-        await bot.edit_message_text(chat_id=callback.from_user.id,\
-            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        await bot.edit_message_caption(chat_id=callback.from_user.id,\
+        message_id=callback.message.message_id, caption=text, reply_markup=acc_ikm)
     except:
-        pass
+        try:
+            await bot.edit_message_text(chat_id=callback.from_user.id,\
+            message_id=callback.message.message_id, text=text, reply_markup=acc_ikm)
+        except:
+            pass
 
 
     
